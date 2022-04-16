@@ -32,12 +32,12 @@ public class GuiCycleButton<T extends Object> extends GuiButton {
     }
 
     public T getValue() {
-        return (T)values[index];
+        return (T) values[index];
     }
 
     public void setValue(T elem) {
-        for(int i = 0; i < values.length; i++) {
-            if(values[i] == elem) {
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == elem) {
                 this.index = i;
                 this.updateTitle();
                 break;
@@ -46,15 +46,15 @@ public class GuiCycleButton<T extends Object> extends GuiButton {
     }
 
     public String toDisplayName(T elem) {
-        for(int i = 0; i < values.length; i++) {
-            if(values[i] == elem) return displayNames[i];
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == elem) return displayNames[i];
         }
         return null;
     }
 
     public void actionPerformed() {
         index++;
-        if(index >= values.length) index = 0;
+        if (index >= values.length) index = 0;
         updateTitle();
     }
 
@@ -63,7 +63,7 @@ public class GuiCycleButton<T extends Object> extends GuiButton {
     }
 
     public void updateTitle() {
-        if(index >= displayNames.length) return;
+        if (index >= displayNames.length) return;
         displayString = String.format("%s: %s", title, displayNames[index]);
     }
 

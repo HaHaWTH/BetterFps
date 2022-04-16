@@ -32,12 +32,13 @@ public class OptionManager {
         // Algorithm
         GuiConfigOption<AlgorithmType> algorithm = new GuiConfigOption<AlgorithmType>(0, "betterfps.options.algorithm.title");
         algorithm.add(AlgorithmType.VANILLA, "betterfps.options.algorithm.vanilla");
-        algorithm.add(AlgorithmType.RIVENS, "betterfps.options.algorithm.rivens");
+        algorithm.add(AlgorithmType.JAVA, "betterfps.options.algorithm.java");
+        algorithm.add(AlgorithmType.LIBGDX, "betterfps.options.algorithm.libgdx");
+        algorithm.add(AlgorithmType.RANDOM, "betterfps.options.algorithm.random");
         algorithm.add(AlgorithmType.RIVENS_FULL, "betterfps.options.algorithm.rivens-full");
         algorithm.add(AlgorithmType.RIVENS_HALF, "betterfps.options.algorithm.rivens-half");
+        algorithm.add(AlgorithmType.RIVENS, "betterfps.options.algorithm.rivens");
         algorithm.add(AlgorithmType.TAYLORS, "betterfps.options.algorithm.taylors");
-        algorithm.add(AlgorithmType.JAVA, "betterfps.options.algorithm.java");
-        algorithm.add(AlgorithmType.RANDOM, "betterfps.options.algorithm.random");
         algorithm.setRestart(Conditions.isPatched(Mappings.C_MathHelper));
         algorithm.setWide(true);
         algorithm.setDefaults(AlgorithmType.VANILLA, AlgorithmType.RIVENS_HALF, config.algorithm);

@@ -5,11 +5,12 @@ import guichaguri.betterfps.BetterFpsConfig.AlgorithmType;
 import guichaguri.betterfps.BetterFpsHelper;
 import guichaguri.betterfps.tweaker.BetterFpsTweaker;
 import guichaguri.betterfps.tweaker.Mappings;
-import java.io.InputStream;
-import java.util.LinkedHashMap;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.tree.*;
+
+import java.io.InputStream;
+import java.util.LinkedHashMap;
 
 /**
  * @author Guilherme Chaguri
@@ -34,12 +35,12 @@ public class MathTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] bytes) {
-        if(bytes == null) return null;
+        if (bytes == null) return null;
 
-        if(Mappings.C_MathHelper.is(name)) {
+        if (Mappings.C_MathHelper.is(name)) {
             try {
                 return patchMath(bytes);
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 BetterFpsHelper.LOG.error("Couldn't patch math algorithms", ex);
             }
         }
@@ -52,13 +53,13 @@ public class MathTransformer implements IClassTransformer {
         BetterFpsConfig config = BetterFpsHelper.getConfig();
 
         String algorithmClass = algorithmClasses.get(config.algorithm);
-        if(algorithmClass == null) {
+        if (algorithmClass == null) {
             BetterFpsHelper.LOG.error("The algorithm is invalid. We're going to use Vanilla Algorithm instead.");
             config.algorithm = AlgorithmType.VANILLA;
             return bytes;
         }
 
-        if(config.algorithm == AlgorithmType.VANILLA) {
+        if (config.algorithm == AlgorithmType.VANILLA) {
             BetterFpsHelper.LOG.info("No algorithm for patching, Vanilla Algorithm will be used");
             return bytes;
         } else {
@@ -66,7 +67,7 @@ public class MathTransformer implements IClassTransformer {
         }
 
         InputStream in = BetterFpsTweaker.getResourceStream(algorithmClass + ".class");
-        if(in == null) return bytes;
+        if (in == null) return bytes;
 
         ClassNode mathClass = ASMUtils.readClass(IOUtils.toByteArray(in), 0);
 
@@ -79,44 +80,44 @@ public class MathTransformer implements IClassTransformer {
         boolean patchedSin = false;
         boolean patchedCos = false;
 
-        for(FieldNode f : mathClass.fields) {
+        for (FieldNode f : mathClass.fields) {
             ASMUtils.copyField(mathClass, classNode, f, true);
         }
 
-        for(MethodNode m : mathClass.methods) {
-            if(m.name.equals(METHOD_SIN)) {
-                if(sin != null) m.name = sin.name;
+        for (MethodNode m : mathClass.methods) {
+            if (m.name.equals(METHOD_SIN)) {
+                if (sin != null) m.name = sin.name;
                 ASMUtils.copyMethod(mathClass, classNode, m, sin, true);
                 patchedSin = true;
-            } else if(m.name.equals(METHOD_COS)) {
-                if(cos != null) m.name = cos.name;
+            } else if (m.name.equals(METHOD_COS)) {
+                if (cos != null) m.name = cos.name;
                 ASMUtils.copyMethod(mathClass, classNode, m, cos, true);
                 patchedCos = true;
-            } else if(m.name.equals("<clinit>")) {
+            } else if (m.name.equals("<clinit>")) {
                 m.name = "init";
                 ASMUtils.appendMethod(mathClass, classNode, m, init);
             } else {
                 ASMUtils.copyMethod(mathClass, classNode, m, true);
             }
 
-            if(sin != null) replaceCallReferences(classNode.name, METHOD_SIN, sin.name, m);
-            if(cos != null) replaceCallReferences(classNode.name, METHOD_COS, cos.name, m);
+            if (sin != null) replaceCallReferences(classNode.name, METHOD_SIN, sin.name, m);
+            if (cos != null) replaceCallReferences(classNode.name, METHOD_COS, cos.name, m);
         }
 
         FieldNode sinTable = ASMUtils.findField(classNode, Mappings.F_SIN_TABLE);
 
-        if(patchedSin && patchedCos && sinTable != null && init != null) {
+        if (patchedSin && patchedCos && sinTable != null && init != null) {
             classNode.fields.remove(sinTable);
 
             InsnList inst = init.instructions;
             LabelNode currentLabel = null;
-            for(int i = 0; i < inst.size(); i++) {
+            for (int i = 0; i < inst.size(); i++) {
                 AbstractInsnNode node = inst.get(i);
-                if(node instanceof LabelNode) {
-                    currentLabel = (LabelNode)node;
-                } else if(node instanceof FieldInsnNode && currentLabel != null) {
-                    FieldInsnNode f = (FieldInsnNode)node;
-                    if(classNode.name.equals(f.owner) && sinTable.name.equals(f.name) && sinTable.desc.equals(f.desc)) {
+                if (node instanceof LabelNode) {
+                    currentLabel = (LabelNode) node;
+                } else if (node instanceof FieldInsnNode && currentLabel != null) {
+                    FieldInsnNode f = (FieldInsnNode) node;
+                    if (classNode.name.equals(f.owner) && sinTable.name.equals(f.name) && sinTable.desc.equals(f.desc)) {
                         i = inst.indexOf(currentLabel);
                         ASMUtils.removeLabelSection(inst, currentLabel);
                     }
@@ -132,13 +133,13 @@ public class MathTransformer implements IClassTransformer {
     private void replaceCallReferences(String clazz, String needle, String replacement, MethodNode method) {
         InsnList list = method.instructions;
 
-        for(int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             AbstractInsnNode node = list.get(i);
 
-            if(node instanceof MethodInsnNode) {
-                MethodInsnNode m = (MethodInsnNode)node;
+            if (node instanceof MethodInsnNode) {
+                MethodInsnNode m = (MethodInsnNode) node;
 
-                if(m.owner.equals(clazz) && m.name.equals(needle)) {
+                if (m.owner.equals(clazz) && m.name.equals(needle)) {
                     m.name = replacement;
                 }
             }

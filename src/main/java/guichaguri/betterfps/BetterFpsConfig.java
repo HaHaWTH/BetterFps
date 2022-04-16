@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class BetterFpsConfig {
 
-    public AlgorithmType algorithm = AlgorithmType.RIVENS_HALF;
+    public AlgorithmType algorithm = BetterFpsConfig.AlgorithmType.RIVENS_HALF;
 
     public boolean updateChecker = true;
 

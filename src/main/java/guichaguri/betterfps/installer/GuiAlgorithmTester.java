@@ -1,26 +1,14 @@
 package guichaguri.betterfps.installer;
 
-import guichaguri.betterfps.math.JavaMath;
-import guichaguri.betterfps.math.LibGDXMath;
-import guichaguri.betterfps.math.RivensFullMath;
-import guichaguri.betterfps.math.RivensHalfMath;
-import guichaguri.betterfps.math.RivensMath;
-import guichaguri.betterfps.math.TaylorMath;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import guichaguri.betterfps.math.*;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 /**
  * @author Guilherme Chaguri
@@ -34,9 +22,9 @@ public class GuiAlgorithmTester extends JDialog implements ActionListener {
         String bestAlgorithm = null;
         long bestTime = Long.MAX_VALUE;
 
-        for(String key : data.keySet()) {
+        for (String key : data.keySet()) {
             long time = data.get(key);
-            if(time < bestTime) {
+            if (time < bestTime) {
                 bestAlgorithm = key;
                 bestTime = time;
             }
@@ -68,8 +56,8 @@ public class GuiAlgorithmTester extends JDialog implements ActionListener {
 
         long startTime = System.currentTimeMillis();
 
-        for(int i = 0; i < maxLoops; i++) {
-            float angle = (float)Math.toRadians(i % 360);
+        for (int i = 0; i < maxLoops; i++) {
+            float angle = (float) Math.toRadians(i % 360);
             long time;
 
             time = System.nanoTime();
@@ -107,7 +95,7 @@ public class GuiAlgorithmTester extends JDialog implements ActionListener {
             TaylorMath.cos(angle);
             taylors += System.nanoTime() - time;
 
-            if(System.currentTimeMillis() - startTime > maxTime) {
+            if (System.currentTimeMillis() - startTime > maxTime) {
                 break;
             }
         }
@@ -193,11 +181,11 @@ public class GuiAlgorithmTester extends JDialog implements ActionListener {
 
         long bestTime = Long.MAX_VALUE;
 
-        for(String key : results.keySet()) {
+        for (String key : results.keySet()) {
             data.add(new JLabel(BetterFpsInstaller.i18n("betterfps.options.algorithm." + key)));
 
             long d = results.get(key);
-            if(d < bestTime) {
+            if (d < bestTime) {
                 bestAlgorithm = key;
                 bestTime = d;
             }
@@ -244,16 +232,16 @@ public class GuiAlgorithmTester extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         String action = event.getActionCommand();
 
-        if(action.equals(TEST_AGAIN)) {
+        if (action.equals(TEST_AGAIN)) {
 
             startBenchmark();
 
-        } else if(action.equals(CHANGE_ALGORITHM)) {
+        } else if (action.equals(CHANGE_ALGORITHM)) {
 
             try {
                 BetterFpsInstaller.ALGORITHM = bestAlgorithm;
                 BetterFpsInstaller.saveAlgorithm();
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 BetterFpsInstaller.error("Couldn't save the algorithm: %s", ex.getMessage());
             }
             setVisible(false);

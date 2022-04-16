@@ -52,24 +52,24 @@ public class GuiConfigOption<T> extends GuiCycleButton<T> {
         return description;
     }
 
-    public void setDescription(String ... lines) {
+    public void setDescription(String... lines) {
         StringBuilder builder = new StringBuilder();
 
-        for(String line : lines) {
+        for (String line : lines) {
             builder.append(line);
             builder.append('\n');
         }
 
         builder.append('\n');
         builder.append(ChatFormatting.GRAY);
-        if(defaultVanilla == defaultBetterFps) {
+        if (defaultVanilla == defaultBetterFps) {
             builder.append(I18n.format("betterfps.options.default", toDisplayName(defaultBetterFps)));
         } else {
             builder.append(I18n.format("betterfps.options.default.vanilla", toDisplayName(defaultVanilla)));
             builder.append('\n');
             builder.append(I18n.format("betterfps.options.default.betterfps", toDisplayName(defaultBetterFps)));
         }
-        if(restart) {
+        if (restart) {
             builder.append('\n');
             builder.append(ChatFormatting.RED);
             builder.append(I18n.format("betterfps.options.restart"));
@@ -85,8 +85,8 @@ public class GuiConfigOption<T> extends GuiCycleButton<T> {
 
     @Override
     public void actionPerformed() {
-        if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-            if(shiftClick != null) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+            if (shiftClick != null) {
                 shiftClick.run();
                 return;
             }

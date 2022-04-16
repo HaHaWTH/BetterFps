@@ -1,9 +1,10 @@
 package guichaguri.betterfps.gui;
 
-import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
+
+import java.io.IOException;
 
 /**
  * @author Guilherme Chaguri
@@ -28,7 +29,7 @@ public class GuiRestartDialog extends GuiScreen {
         int centerY = height / 2;
         int dialogTextAmount = 2;
 
-        for(int i = 0; i < dialogTextAmount; i++) {
+        for (int i = 0; i < dialogTextAmount; i++) {
             String msg = I18n.format("betterfps.options.restart.dialog." + (i + 1));
             drawCenteredString(fontRenderer, msg, centerX, centerY - ((dialogTextAmount - i) * fontRenderer.FONT_HEIGHT), 0xFFFFFF);
         }
@@ -42,7 +43,7 @@ public class GuiRestartDialog extends GuiScreen {
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
-        switch(button.id) {
+        switch (button.id) {
             case 1:
                 mc.shutdown();
                 break;
