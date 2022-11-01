@@ -3,7 +3,6 @@ package guichaguri.betterfps.patches.misc;
 import guichaguri.betterfps.gui.GuiBetterFpsConfig;
 import guichaguri.betterfps.transformers.annotations.Copy;
 import guichaguri.betterfps.transformers.annotations.Copy.Mode;
-import java.io.IOException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiButtonLanguage;
@@ -14,7 +13,6 @@ import net.minecraft.client.resources.I18n;
  * @author Guilherme Chaguri
  */
 public abstract class OptionsButton extends GuiScreen {
-
     @Copy(Mode.REPLACE)
     @Override
     public void setWorldAndResolution(Minecraft mc, int width, int height) {
@@ -29,22 +27,22 @@ public abstract class OptionsButton extends GuiScreen {
 
         int width_BF = 150;
 
-        if(hasButtonInPosition(x_BF, y_BF, width_BF)) {
-            // There is a another button on the right side, we will change to the left side
+        if (hasButtonInPosition(x_BF, y_BF, width_BF)) {
+            // There is another button on the right side, we will change to the left side
             x_BF = this.width / 2 - 155;
 
-            if(hasButtonInPosition(x_BF, y_BF, width_BF)) {
+            if (hasButtonInPosition(x_BF, y_BF, width_BF)) {
                 // There is also a button on the left side, we will find another spot
                 // 102 - Language Button
                 GuiButton language = null;
-                for(GuiButton b : buttonList) {
-                    if(b.id == 102) {
+                for (GuiButton b : buttonList) {
+                    if (b.id == 102) {
                         language = b;
                         break;
                     }
                 }
 
-                if(language == null) {
+                if (language == null) {
                     // Did not find the language button. A mod must have removed it, we'll add the button in the corner
                     x_BF = 0;
                     y_BF = 0;
@@ -71,18 +69,18 @@ public abstract class OptionsButton extends GuiScreen {
         int x2 = x + width;
         int y2 = y + 20;
 
-        for(GuiButton b : buttonList) {
+        for (GuiButton b : buttonList) {
             int bX = b.x;
             int bY = b.y;
-            if(x2 > bX && y2 > bY && x < bX + b.getButtonWidth() && y < bY + 20) return true;
+            if (x2 > bX && y2 > bY && x < bX + b.getButtonWidth() && y < bY + 20) return true;
         }
         return false;
     }
 
     @Copy(Mode.APPEND)
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
-        if(button.id == 72109) {
+    protected void actionPerformed(GuiButton button) {
+        if (button.id == 72109) {
             mc.gameSettings.saveOptions();
             mc.displayGuiScreen(new GuiBetterFpsConfig(this));
         }

@@ -1,29 +1,25 @@
 package guichaguri.betterfps.installer;
 
 import guichaguri.betterfps.BetterFps;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.GridLayout;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
-import javax.swing.*;
 
 /**
  * @author Guilherme Chaguri
  */
 public class GuiInstaller extends JFrame implements ActionListener {
-
     private final String INSTALL = "install";
     private final String EXTRACT = "extract";
     private final String TEST_ALGORITHMS = "algorithm_test";
     private final String DOWNLOADS = "downloads";
     private final String ISSUES = "issues";
-
-    private final String ISSUES_URL = "https://github.com/Guichaguri/BetterFps/issues";
 
     public GuiInstaller() {
         setTitle(BetterFpsInstaller.i18n("betterfps.installer.title"));
@@ -43,7 +39,7 @@ public class GuiInstaller extends JFrame implements ActionListener {
         title.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         content.add(title);
 
-        for(int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 3; i++) {
             content.add(createLabel("betterfps.installer.note." + i));
         }
 
@@ -68,7 +64,7 @@ public class GuiInstaller extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
     }
 
-    private JLabel createLabel(String key, Object ... data) {
+    private JLabel createLabel(String key, Object... data) {
         JLabel label = new JLabel(BetterFpsInstaller.i18n(key, data));
         label.setHorizontalAlignment(JLabel.CENTER);
         label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
@@ -91,28 +87,24 @@ public class GuiInstaller extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         String action = event.getActionCommand();
 
-        if(action.equals(INSTALL)) {
-
-            GuiInstallOptions options = new GuiInstallOptions(this);
-            options.setVisible(true);
-
-        } else if(action.equals(EXTRACT)) {
-
-            extractMod();
-
-        } else if(action.equals(TEST_ALGORITHMS)) {
-
-            GuiAlgorithmTester tester = new GuiAlgorithmTester(this);
-            tester.setVisible(true);
-
-        } else if(action.equals(DOWNLOADS)) {
-
-            openURL(BetterFps.URL);
-
-        } else if(action.equals(ISSUES)) {
-
-            openURL(ISSUES_URL);
-
+        switch (action) {
+            case INSTALL:
+                GuiInstallOptions options = new GuiInstallOptions(this);
+                options.setVisible(true);
+                break;
+            case EXTRACT:
+                extractMod();
+                break;
+            case TEST_ALGORITHMS:
+                GuiAlgorithmTester tester = new GuiAlgorithmTester(this);
+                tester.setVisible(true);
+                break;
+            case DOWNLOADS:
+                openURL(BetterFps.URL);
+                break;
+            case ISSUES:
+                openURL("https://github.com/Guichaguri/BetterFps/issues");
+                break;
         }
     }
 
@@ -122,7 +114,7 @@ public class GuiInstaller extends JFrame implements ActionListener {
         chooser.setSelectedFile(new File(String.format("BetterFps-%s.jar", BetterFps.VERSION)));
         int r = chooser.showSaveDialog(this);
 
-        if(r == JFileChooser.APPROVE_OPTION) {
+        if (r == JFileChooser.APPROVE_OPTION) {
             File f = chooser.getSelectedFile();
             try {
                 long time = System.nanoTime();
@@ -133,7 +125,7 @@ public class GuiInstaller extends JFrame implements ActionListener {
                 String msg = BetterFpsInstaller.i18n("betterfps.installer.done", TimeUnit.NANOSECONDS.toMillis(time));
                 JOptionPane.showMessageDialog(this, msg, title, JOptionPane.INFORMATION_MESSAGE);
 
-            } catch(IOException ex) {
+            } catch (IOException ex) {
                 ex.printStackTrace();
 
                 String msg = "An error ocurred while extracting: %s\nSorry for the inconvenience.";
@@ -147,6 +139,7 @@ public class GuiInstaller extends JFrame implements ActionListener {
         try {
             Desktop desktop = Desktop.getDesktop();
             desktop.browse(new URI(url));
-        } catch(Exception ex) {}
+        } catch (Exception ex) {
+        }
     }
 }

@@ -7,13 +7,13 @@ import java.lang.annotation.Target;
 
 /**
  * Defines a reference name to the method or field, so it can be referred by the custom patcher
- * @see Patcher
+ *
  * @author Guilherme Chaguri
+ * @see Patcher
  */
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD, ElementType.FIELD})
 public @interface Reference {
-
     /**
      * The reference name
      */

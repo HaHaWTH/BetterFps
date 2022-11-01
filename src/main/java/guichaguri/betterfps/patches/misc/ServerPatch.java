@@ -6,12 +6,12 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import guichaguri.betterfps.UpdateChecker;
 import guichaguri.betterfps.transformers.annotations.Copy;
 import guichaguri.betterfps.transformers.annotations.Copy.Mode;
-import java.io.File;
-import java.io.IOException;
-import java.net.Proxy;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.datafix.DataFixer;
+
+import java.io.File;
+import java.net.Proxy;
 
 /**
  * @author Guilherme Chaguri
@@ -23,7 +23,7 @@ public abstract class ServerPatch extends MinecraftServer {
 
     @Copy(Mode.APPEND)
     @Override
-    public boolean init() throws IOException {
+    public boolean init() {
         UpdateChecker.check();
         return true;
     }

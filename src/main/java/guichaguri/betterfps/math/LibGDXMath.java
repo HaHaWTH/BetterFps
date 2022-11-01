@@ -20,20 +20,20 @@ public class LibGDXMath {
     private static final float[] BF_table = new float[BF_SIN_COUNT];
 
     static {
-        for(int i = 0; i < BF_SIN_COUNT; i++) {
-            BF_table[i] = (float)Math.sin((i + 0.5f) / BF_SIN_COUNT * BF_radFull);
+        for (int i = 0; i < BF_SIN_COUNT; i++) {
+            BF_table[i] = (float) Math.sin((i + 0.5f) / BF_SIN_COUNT * BF_radFull);
         }
         for (int i = 0; i < 360; i += 90) {
-            BF_table[(int)(i * BF_degToIndex) & BF_SIN_MASK] = (float)Math.sin(i * BF_degreesToRadians);
+            BF_table[(int) (i * BF_degToIndex) & BF_SIN_MASK] = (float) Math.sin(i * BF_degreesToRadians);
         }
     }
 
 
     public static float sin(float radians) {
-        return BF_table[(int)(radians * BF_radToIndex) & BF_SIN_MASK];
+        return BF_table[(int) (radians * BF_radToIndex) & BF_SIN_MASK];
     }
 
     public static float cos(float radians) {
-        return BF_table[(int)((radians + BF_PI / 2) * BF_radToIndex) & BF_SIN_MASK];
+        return BF_table[(int) ((radians + BF_PI / 2) * BF_radToIndex) & BF_SIN_MASK];
     }
 }

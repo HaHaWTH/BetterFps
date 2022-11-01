@@ -2,9 +2,9 @@ package guichaguri.betterfps.installer;
 
 import com.eclipsesource.json.JsonObject;
 import guichaguri.betterfps.BetterFps;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -12,7 +12,6 @@ import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import javax.swing.*;
 
 /**
  * @author Guilherme Chaguri
@@ -21,8 +20,6 @@ public class GuiInstallOptions extends JDialog implements ActionListener, FocusL
 
     private final String BROWSE = "browse_directories";
     private final String INSTALL = "install";
-
-    private final String DEFAULT_PROFILE = "BetterFps";
 
     private final JTextField gameDir;
     private final JComboBox versions;
@@ -107,48 +104,50 @@ public class GuiInstallOptions extends JDialog implements ActionListener, FocusL
         versions.removeAllItems();
         profiles.removeAllItems();
 
-        if(!dir.exists() || !dir.isDirectory()) {
+        if (!dir.exists() || !dir.isDirectory()) {
             return;
         }
 
         File versionsDir = new File(dir, "versions");
-        if(versionsDir.exists() && versionsDir.isDirectory()) {
-            for(File ver : versionsDir.listFiles()) {
-                if(!ver.isDirectory()) continue;
+        if (versionsDir.exists() && versionsDir.isDirectory()) {
+            for (File ver : versionsDir.listFiles()) {
+                if (!ver.isDirectory()) continue;
                 String name = ver.getName();
-                if(!name.startsWith(BetterFps.MC_VERSION)) continue;
+                if (!name.startsWith(BetterFps.MC_VERSION)) continue;
                 versions.addItem(name);
             }
         }
 
+        String DEFAULT_PROFILE = "BetterFps";
         profiles.addItem(DEFAULT_PROFILE);
         try {
             launcherProfiles = BetterFpsInstaller.loadProfiles(dir);
-            for(String name : BetterFpsInstaller.getProfileNames(launcherProfiles)) {
-                if(!name.equalsIgnoreCase(DEFAULT_PROFILE)) profiles.addItem(name);
+            for (String name : BetterFpsInstaller.getProfileNames(launcherProfiles)) {
+                if (!name.equalsIgnoreCase(DEFAULT_PROFILE)) profiles.addItem(name);
             }
-        } catch(IOException ex) {}
+        } catch (IOException ex) {
+        }
     }
 
     @Override
     public void actionPerformed(ActionEvent event) {
         String action = event.getActionCommand();
 
-        if(action.equals(BROWSE)) {
+        if (action.equals(BROWSE)) {
 
             JFileChooser chooser = new JFileChooser(BetterFpsInstaller.getSuggestedMinecraftFolder());
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             chooser.setDialogTitle(BetterFpsInstaller.i18n("betterfps.installer.label.game-dir"));
             int r = chooser.showOpenDialog(this);
 
-            if(r == JFileChooser.APPROVE_OPTION) {
+            if (r == JFileChooser.APPROVE_OPTION) {
                 gameDir.setText(chooser.getSelectedFile().getAbsolutePath());
                 updateComboBoxes();
             }
 
-        } else if(action.equals(INSTALL)) {
+        } else if (action.equals(INSTALL)) {
 
-            if(versions.getSelectedIndex() == -1 || profiles.getSelectedIndex() == -1) {
+            if (versions.getSelectedIndex() == -1 || profiles.getSelectedIndex() == -1) {
                 String msg = "The version or the profile is missing.";
                 JOptionPane.showMessageDialog(this, msg, "Oops!", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -168,7 +167,7 @@ public class GuiInstallOptions extends JDialog implements ActionListener, FocusL
                 versionJson = BetterFpsInstaller.generateVersion(versionJson, version);
                 BetterFpsInstaller.saveVersion(dir, version, versionJson);
 
-                if(launcherProfiles != null) {
+                if (launcherProfiles != null) {
                     BetterFpsInstaller.addProfile(launcherProfiles, profile, version);
                     BetterFpsInstaller.saveProfiles(dir, launcherProfiles);
                 }
@@ -182,7 +181,7 @@ public class GuiInstallOptions extends JDialog implements ActionListener, FocusL
                 JOptionPane.showMessageDialog(this, msg, title, JOptionPane.INFORMATION_MESSAGE);
                 setVisible(false);
 
-            } catch(IOException ex) {
+            } catch (IOException ex) {
                 ex.printStackTrace();
 
                 String msg = "An error ocurred while installing: %s\nSorry for the inconvenience.";

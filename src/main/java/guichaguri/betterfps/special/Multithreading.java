@@ -4,9 +4,8 @@ package guichaguri.betterfps.special;
  * @author Guilherme Chaguri
  */
 public class Multithreading extends Thread {
-
     public static Thread start(IMultithreaded m, String task, boolean async) {
-        if(async) {
+        if (async) {
             return start(m, task);
         } else {
             m.run(task);
@@ -26,7 +25,7 @@ public class Multithreading extends Thread {
     }
 
     public static void stop(Thread thread) {
-        if(thread != null && thread.isAlive()) {
+        if (thread != null && thread.isAlive()) {
             thread.interrupt();
         }
     }

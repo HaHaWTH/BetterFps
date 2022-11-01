@@ -33,7 +33,7 @@ public class BetterFpsConfig {
         @SerializedName("rivens-full") RIVENS_FULL,
         @SerializedName("rivens-half") RIVENS_HALF,
         @SerializedName("rivens") RIVENS,
-        @SerializedName("taylors") TAYLORS;
+        @SerializedName("taylors") TAYLORS
     }
 
 }

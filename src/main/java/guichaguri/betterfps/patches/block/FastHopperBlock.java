@@ -17,7 +17,6 @@ import net.minecraft.world.World;
  */
 @Condition(Conditions.FAST_HOPPER)
 public abstract class FastHopperBlock extends Block {
-
     protected FastHopperBlock(Material materialIn) {
         super(materialIn);
     }
@@ -26,8 +25,8 @@ public abstract class FastHopperBlock extends Block {
     @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block neighborBlock, BlockPos pos2) {
         TileEntity te = worldIn.getTileEntity(pos);
-        if(te != null && te instanceof IFastHopper) {
-            ((IFastHopper)te).updateFastHopper();
+        if (te instanceof IFastHopper) {
+            ((IFastHopper) te).updateFastHopper();
         }
     }
 

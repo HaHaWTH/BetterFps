@@ -19,8 +19,8 @@ public class Patch {
 
     private final ClassNode sourceClass;
     private final ClassNode targetClass;
-    private final HashMap<String, MethodNode> refMethods = new HashMap<String, MethodNode>();
-    private final HashMap<String, FieldNode> refFields = new HashMap<String, FieldNode>();
+    private final HashMap<String, MethodNode> refMethods = new HashMap<>();
+    private final HashMap<String, FieldNode> refFields = new HashMap<>();
 
     Patch(ClassNode source, ClassNode target) {
         this.sourceClass = source;

@@ -16,11 +16,10 @@ import java.util.List;
  * @author Guilherme Chaguri
  */
 public class GuiBetterFpsConfig extends GuiScreen {
-
     private final GuiScreen parent;
     private String title, titleMouseOver, titleRightClick;
 
-    private final List<GuiConfigOption> options = new ArrayList<GuiConfigOption>();
+    private final List<GuiConfigOption> options = new ArrayList<>();
     private float scrollY = 0, lastScrollY = 0;
     private int pageHeight = 0;
 
@@ -84,7 +83,7 @@ public class GuiBetterFpsConfig extends GuiScreen {
             scrollY = 0;
             if (lastScrollY > 0) lastScrollY = 0;
         } else if (scrollY < pageHeightDelta) {
-            int scroll = pageHeightDelta > 0 ? 0 : pageHeightDelta;
+            int scroll = Math.min(pageHeightDelta, 0);
             scrollY = scroll;
             if (lastScrollY < pageHeightDelta) lastScrollY = scroll;
         }
@@ -107,8 +106,8 @@ public class GuiBetterFpsConfig extends GuiScreen {
         int mouseYScroll = getScrollMouseY(mouseY);
 
         GlStateManager.translate(0, lastScrollY, 0);
-        for (int i = 0; i < options.size(); ++i) {
-            options.get(i).drawButton(mc, mouseX, mouseYScroll, partialTicks);
+        for (GuiConfigOption option : options) {
+            option.drawButton(mc, mouseX, mouseYScroll, partialTicks);
         }
         GlStateManager.translate(0, -lastScrollY, 0);
 
@@ -130,8 +129,7 @@ public class GuiBetterFpsConfig extends GuiScreen {
         }
 
         if (Mouse.isButtonDown(1)) {
-            for (int i = 0; i < options.size(); ++i) {
-                GuiConfigOption button = options.get(i);
+            for (GuiConfigOption button : options) {
                 if (!button.isMouseOver()) continue;
 
                 String description = button.getDescription();
@@ -167,9 +165,7 @@ public class GuiBetterFpsConfig extends GuiScreen {
         if (mouseButton == 0) {
             int mouseYScroll = getScrollMouseY(mouseY);
 
-            for (int i = 0; i < options.size(); ++i) {
-                GuiConfigOption button = options.get(i);
-
+            for (GuiConfigOption button : options) {
                 if (button.mousePressed(mc, mouseX, mouseYScroll)) {
                     button.playPressSound(mc.getSoundHandler());
                     button.actionPerformed();
@@ -185,7 +181,7 @@ public class GuiBetterFpsConfig extends GuiScreen {
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
+    protected void actionPerformed(GuiButton button) {
         switch (button.id) {
             case -1:
                 // Done

@@ -7,14 +7,14 @@ import guichaguri.betterfps.BetterFpsHelper;
 import guichaguri.betterfps.gui.GuiConfigOption;
 import guichaguri.betterfps.transformers.Conditions;
 import guichaguri.betterfps.tweaker.Mappings;
-import java.util.List;
 import net.minecraft.client.resources.I18n;
+
+import java.util.List;
 
 /**
  * @author Guilherme Chaguri
  */
 public class OptionManager {
-
     public static void addButtons(List<GuiConfigOption> buttons) {
         BetterFpsConfig config = BetterFpsHelper.getConfig();
 
@@ -30,7 +30,7 @@ public class OptionManager {
         };
 
         // Algorithm
-        GuiConfigOption<AlgorithmType> algorithm = new GuiConfigOption<AlgorithmType>(0, "betterfps.options.algorithm.title");
+        GuiConfigOption<AlgorithmType> algorithm = new GuiConfigOption<>(0, "betterfps.options.algorithm.title");
         algorithm.add(AlgorithmType.VANILLA, "betterfps.options.algorithm.vanilla");
         algorithm.add(AlgorithmType.JAVA, "betterfps.options.algorithm.java");
         algorithm.add(AlgorithmType.LIBGDX, "betterfps.options.algorithm.libgdx");
@@ -50,7 +50,7 @@ public class OptionManager {
         buttons.add(algorithm);
 
         // Update Checker
-        GuiConfigOption<Boolean> updateChecker = new GuiConfigOption<Boolean>(1, "betterfps.options.updatechecker.title");
+        GuiConfigOption<Boolean> updateChecker = new GuiConfigOption<>(1, "betterfps.options.updatechecker.title");
         updateChecker.set(boolMap, enabledNames);
         updateChecker.setDefaults(true, true, config.updateChecker);
         updateChecker.setDescription(
@@ -61,7 +61,7 @@ public class OptionManager {
         buttons.add(updateChecker);
 
         // Pre-allocate memory
-        GuiConfigOption<Boolean> allocMemory = new GuiConfigOption<Boolean>(2, "betterfps.options.allocmemory.title");
+        GuiConfigOption<Boolean> allocMemory = new GuiConfigOption<>(2, "betterfps.options.allocmemory.title");
         allocMemory.set(boolMap, enabledNames);
         allocMemory.setRestart(Conditions.isPatched(Mappings.C_Minecraft));
         allocMemory.setDefaults(true, false, config.preallocateMemory);
@@ -69,7 +69,7 @@ public class OptionManager {
         buttons.add(allocMemory);
 
         // Fog
-        GuiConfigOption<Boolean> fog = new GuiConfigOption<Boolean>(3, "betterfps.options.fog.title");
+        GuiConfigOption<Boolean> fog = new GuiConfigOption<>(3, "betterfps.options.fog.title");
         fog.set(boolMap, fancyFast);
         fog.setRestart(Conditions.isPatched(Mappings.C_EntityRenderer));
         fog.setDefaults(true, true, config.fog);
@@ -77,7 +77,7 @@ public class OptionManager {
         buttons.add(fog);
 
         // Beacon Beam
-        GuiConfigOption<Boolean> beam = new GuiConfigOption<Boolean>(4, "betterfps.options.beaconbeam.title");
+        GuiConfigOption<Boolean> beam = new GuiConfigOption<>(4, "betterfps.options.beaconbeam.title");
         beam.set(boolMap, fancyFast);
         beam.setRestart(Conditions.isPatched(Mappings.C_TileEntityBeaconRenderer));
         beam.setDefaults(true, true, config.beaconBeam);
@@ -85,7 +85,7 @@ public class OptionManager {
         buttons.add(beam);
 
         // Hopper Improvement
-        GuiConfigOption<Boolean> hopper = new GuiConfigOption<Boolean>(5, "betterfps.options.hopper.title");
+        GuiConfigOption<Boolean> hopper = new GuiConfigOption<>(5, "betterfps.options.hopper.title");
         hopper.set(boolMap, enabledNames);
         hopper.setRestart(Conditions.isPatched(Mappings.C_TileEntityHopper));
         hopper.setDefaults(false, true, config.fastHopper);
@@ -95,7 +95,7 @@ public class OptionManager {
 
         // Beacon Improvement
         GuiConfigOption<Boolean> beacon;
-        beacon = new GuiConfigOption<Boolean>(6, "betterfps.options.beacon.title");
+        beacon = new GuiConfigOption<>(6, "betterfps.options.beacon.title");
         beacon.set(boolMap, enabledNames);
         beacon.setRestart(Conditions.isPatched(Mappings.C_TileEntityBeacon));
         beacon.setDefaults(false, true, config.fastBeacon);
@@ -133,8 +133,8 @@ public class OptionManager {
         config.fastSearch = search != 0;
         config.asyncSearch = search == 2;*/
 
-        for(GuiConfigOption button : buttons) {
-            if(button.shouldRestart()) return true;
+        for (GuiConfigOption button : buttons) {
+            if (button.shouldRestart()) return true;
         }
         return restart;
     }
@@ -143,10 +143,10 @@ public class OptionManager {
         return getButtonValue(buttons, id, true);
     }
 
-    private static <T extends Object> T getButtonValue(List<GuiConfigOption> buttons, int id, T def) {
-        for(GuiConfigOption button : buttons) {
-            if(button.id == id) {
-                return (T)button.getValue();
+    private static <T> T getButtonValue(List<GuiConfigOption> buttons, int id, T def) {
+        for (GuiConfigOption button : buttons) {
+            if (button.id == id) {
+                return (T) button.getValue();
             }
         }
         return def;

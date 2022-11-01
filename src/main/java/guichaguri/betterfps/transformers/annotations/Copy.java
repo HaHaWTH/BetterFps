@@ -7,12 +7,12 @@ import java.lang.annotation.Target;
 
 /**
  * Defines which methods and fields must be copied into the target class
+ *
  * @author Guilherme Chaguri
  */
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD, ElementType.FIELD})
 public @interface Copy {
-
     /**
      * The mode which the field or method should be copied
      */

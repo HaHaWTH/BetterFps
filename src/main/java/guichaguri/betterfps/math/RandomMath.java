@@ -5,10 +5,10 @@ package guichaguri.betterfps.math;
  */
 public class RandomMath {
     public static float sin(float radians) {
-        return (float)Math.random() * radians;
+        return (float) Math.random() * radians;
     }
 
     public static float cos(float radians) {
-        return (float)Math.random() * radians;
+        return (float) Math.random() * radians;
     }
 }

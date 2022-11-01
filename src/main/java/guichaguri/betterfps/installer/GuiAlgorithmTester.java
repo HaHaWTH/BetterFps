@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
  * @author Guilherme Chaguri
  */
 public class GuiAlgorithmTester extends JDialog implements ActionListener {
-
     public static void main(String[] args) {
         warmupClasses();
         Map<String, Long> data = benchmark(1000000000, 5000);
@@ -100,7 +99,7 @@ public class GuiAlgorithmTester extends JDialog implements ActionListener {
             }
         }
 
-        HashMap<String, Long> results = new HashMap<String, Long>();
+        HashMap<String, Long> results = new HashMap<>();
         results.put("java", javaMath);
         results.put("vanilla", vanilla);
         results.put("rivens", rivens);
@@ -212,18 +211,15 @@ public class GuiAlgorithmTester extends JDialog implements ActionListener {
     }
 
     private void startBenchmark() {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                status.setText(BetterFpsInstaller.i18n("betterfps.installer.algorithm.working"));
-                data.setVisible(false);
-                again.setVisible(false);
-                change.setVisible(false);
+        Thread t = new Thread(() -> {
+            status.setText(BetterFpsInstaller.i18n("betterfps.installer.algorithm.working"));
+            data.setVisible(false);
+            again.setVisible(false);
+            change.setVisible(false);
 
-                BetterFpsInstaller.info("Benchmarking algorithms...");
-                warmupClasses();
-                showResults(benchmark(1000000000, 10000));
-            }
+            BetterFpsInstaller.info("Benchmarking algorithms...");
+            warmupClasses();
+            showResults(benchmark(1000000000, 10000));
         });
         t.start();
     }
@@ -233,11 +229,8 @@ public class GuiAlgorithmTester extends JDialog implements ActionListener {
         String action = event.getActionCommand();
 
         if (action.equals(TEST_AGAIN)) {
-
             startBenchmark();
-
         } else if (action.equals(CHANGE_ALGORITHM)) {
-
             try {
                 BetterFpsInstaller.ALGORITHM = bestAlgorithm;
                 BetterFpsInstaller.saveAlgorithm();
@@ -245,7 +238,6 @@ public class GuiAlgorithmTester extends JDialog implements ActionListener {
                 BetterFpsInstaller.error("Couldn't save the algorithm: %s", ex.getMessage());
             }
             setVisible(false);
-
         }
     }
 }

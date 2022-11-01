@@ -7,10 +7,6 @@ import guichaguri.betterfps.transformers.Conditions;
 import guichaguri.betterfps.transformers.annotations.Condition;
 import guichaguri.betterfps.transformers.annotations.Copy;
 import guichaguri.betterfps.transformers.annotations.Copy.Mode;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
 import net.minecraft.creativetab.CreativeTabs;
@@ -20,6 +16,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextFormatting;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * The search algorithm is still the same
@@ -32,7 +33,6 @@ import net.minecraft.util.text.TextFormatting;
  */
 @Condition(Conditions.FAST_SEARCH)
 public abstract class FastCreativeSearch extends GuiContainerCreative implements IMultithreaded {
-
     @Copy
     private Thread searchThread;
 
@@ -55,8 +55,8 @@ public abstract class FastCreativeSearch extends GuiContainerCreative implements
         // When the Gui is initialized, let's initialize our variables
 
         asyncSearch = BetterFpsHelper.getConfig().asyncSearch;
-        if(!asyncSearch) {
-            if(itemBuffer == null) itemBuffer = NonNullList.create();
+        if (!asyncSearch) {
+            if (itemBuffer == null) itemBuffer = NonNullList.create();
         }
     }
 
@@ -65,7 +65,7 @@ public abstract class FastCreativeSearch extends GuiContainerCreative implements
     public void setCurrentCreativeTab(CreativeTabs tab) {
         // When the tab changes, clear the search history so when the search field is shown again, it will rebuild the results
 
-        if(asyncSearch) {
+        if (asyncSearch) {
             Multithreading.stop(searchThread);
             searchThread = null;
         }
@@ -76,7 +76,7 @@ public abstract class FastCreativeSearch extends GuiContainerCreative implements
     @Override
     public void updateCreativeSearch() {
         // TODO REDO
-        if(asyncSearch) {
+        if (asyncSearch) {
             Multithreading.stop(searchThread);
             searchThread = Multithreading.start(this, "search");
         } else {
@@ -93,24 +93,24 @@ public abstract class FastCreativeSearch extends GuiContainerCreative implements
         // TODO REDO
         String search = searchField.getText().toLowerCase(Locale.ROOT);
         boolean rebuildCache = false;
-        GuiContainerCreative.ContainerCreative container = (GuiContainerCreative.ContainerCreative)inventorySlots;
+        GuiContainerCreative.ContainerCreative container = (GuiContainerCreative.ContainerCreative) inventorySlots;
         GuiContainerCreative.ContainerCreative containerBuffer = new ContainerCreative(mc.player);
         List<ItemStack> itemBuffer = null;
 
-        if(oldSearchText == null) {
+        if (oldSearchText == null) {
             // The cache is null, rebuild it
             rebuildCache = true;
-        } else if(search.equals(oldSearchText)) {
+        } else if (search.equals(oldSearchText)) {
             // Text is the same - Update the screen
             currentScroll = 0.0F;
             container.scrollTo(0.0F);
             return;
-        } else if(search.startsWith(oldSearchText)) {
+        } else if (search.startsWith(oldSearchText)) {
             // Text added - Use current results and just refine them
             containerBuffer.itemList.addAll(container.itemList);
-        } else if(oldSearchText.startsWith(search)) {
+        } else if (oldSearchText.startsWith(search)) {
             // Text removed - Leave current results and look for new ones
-            itemBuffer = new ArrayList<ItemStack>(container.itemList);
+            itemBuffer = new ArrayList<>(container.itemList);
             updateBaseItems(containerBuffer);
             updateFilteredItems(containerBuffer);
         } else {
@@ -118,7 +118,7 @@ public abstract class FastCreativeSearch extends GuiContainerCreative implements
             rebuildCache = true;
         }
 
-        if(rebuildCache) {
+        if (rebuildCache) {
             // Rebuild results again
             containerBuffer.itemList.clear();
             updateBaseItems(containerBuffer);
@@ -145,17 +145,17 @@ public abstract class FastCreativeSearch extends GuiContainerCreative implements
         // TODO REDO
         String search = searchField.getText().toLowerCase(Locale.ROOT);
         boolean rebuildCache = false;
-        GuiContainerCreative.ContainerCreative container = (GuiContainerCreative.ContainerCreative)inventorySlots;
+        GuiContainerCreative.ContainerCreative container = (GuiContainerCreative.ContainerCreative) inventorySlots;
 
-        if(oldSearchText == null) {
+        if (oldSearchText == null) {
             // The cache is null, rebuild it
             rebuildCache = true;
-        } else if(search.equals(oldSearchText)) {
+        } else if (search.equals(oldSearchText)) {
             // Text is the same - Do nothing
             return;
-        } else if(search.startsWith(oldSearchText)) {
+        } else if (search.startsWith(oldSearchText)) {
             // Text added - Use current results and just refine them
-        } else if(oldSearchText.startsWith(search)) {
+        } else if (oldSearchText.startsWith(search)) {
             // Text removed - Leave current results and look for new ones
             NonNullList<ItemStack> items = container.itemList;
             container.itemList = itemBuffer;
@@ -167,7 +167,7 @@ public abstract class FastCreativeSearch extends GuiContainerCreative implements
             rebuildCache = true;
         }
 
-        if(rebuildCache) {
+        if (rebuildCache) {
             // Rebuild results again
             container.itemList.clear();
             updateBaseItems(container);
@@ -193,19 +193,19 @@ public abstract class FastCreativeSearch extends GuiContainerCreative implements
         EntityPlayer player = mc.player;
         TooltipFlags advancedTooltips = mc.gameSettings.advancedItemTooltips ? TooltipFlags.ADVANCED : TooltipFlags.NORMAL;
 
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             ItemStack itemstack = iterator.next();
 
-            if(lookupBuffer && itemBuffer.contains(itemstack)) continue;
+            if (lookupBuffer && itemBuffer.contains(itemstack)) continue;
 
             boolean shouldRemove = true;
-            for(String s : itemstack.getTooltip(player, advancedTooltips)) {
-                if(TextFormatting.getTextWithoutFormattingCodes(s).toLowerCase(Locale.ROOT).contains(search)) {
+            for (String s : itemstack.getTooltip(player, advancedTooltips)) {
+                if (TextFormatting.getTextWithoutFormattingCodes(s).toLowerCase(Locale.ROOT).contains(search)) {
                     shouldRemove = false;
                     break;
                 }
             }
-            if(shouldRemove) iterator.remove();
+            if (shouldRemove) iterator.remove();
         }
     }
 
@@ -219,10 +219,10 @@ public abstract class FastCreativeSearch extends GuiContainerCreative implements
         // Let's not add all items when we're not in the search tab
         // Custom search tabs (with a feature added by Forge) should work as expected
         // Vanilla should always use the search tab for searching
-        if(tab != CreativeTabs.SEARCH) return;
+        if (tab != CreativeTabs.SEARCH) return;
 
-        for(Item item : Item.REGISTRY) {
-            if(item != null && item.getCreativeTab() != null) {
+        for (Item item : Item.REGISTRY) {
+            if (item != null && item.getCreativeTab() != null) {
                 item.getSubItems(tab, list);
             }
         }
@@ -236,8 +236,8 @@ public abstract class FastCreativeSearch extends GuiContainerCreative implements
     private void updateFilteredItems(GuiContainerCreative.ContainerCreative container) {
         NonNullList<ItemStack> list = container.itemList;
 
-        for(Enchantment enchantment : Enchantment.REGISTRY) {
-            if(enchantment != null && enchantment.type != null) {
+        for (Enchantment enchantment : Enchantment.REGISTRY) {
+            if (enchantment != null && enchantment.type != null) {
                 //TODO
                 //Items.ENCHANTED_BOOK.getAll(enchantment, list);
             }

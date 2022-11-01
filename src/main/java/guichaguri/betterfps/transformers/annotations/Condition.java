@@ -7,13 +7,13 @@ import java.lang.annotation.Target;
 
 /**
  * Defines a config condition
- * @see guichaguri.betterfps.transformers.Conditions
+ *
  * @author Guilherme Chaguri
+ * @see guichaguri.betterfps.transformers.Conditions
  */
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE})
 public @interface Condition {
-
     /**
      * Condition identifier
      */

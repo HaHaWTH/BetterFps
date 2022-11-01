@@ -1,36 +1,32 @@
 package guichaguri.betterfps.installer;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-import com.eclipsesource.json.WriterConfig;
+import com.eclipsesource.json.*;
 import guichaguri.betterfps.BetterFps;
-import java.awt.Desktop;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 /**
  * @author Guilherme Chaguri
  */
 public class BetterFpsInstaller {
-
     private static final String TWEAK_CLASS = "guichaguri.betterfps.tweaker.BetterFpsTweaker";
     private static final String LIBRARY_IDENTIFIER = "betterfps";
     private static final String LIBRARY_NAME = "BetterFps";
     private static final String VERSION_NAME = BetterFps.VERSION;
-    private static final String[] LIBRARIES = new String[] {
+    private static final String[] LIBRARIES = new String[]{
             "org.ow2.asm:asm-all:5.0.3",
             "net.minecraft:launchwrapper:1.11"
     };
@@ -45,19 +41,14 @@ public class BetterFpsInstaller {
         loadLanguage(lang);
 
         info("Waiting for Swing to load...");
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                loadUI();
-            }
-        });
+        SwingUtilities.invokeLater(BetterFpsInstaller::loadUI);
     }
 
     private static void loadUI() {
         info("Initializing Look and Feel...");
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             info("OS Look and Feel couldn't be loaded. Using the default instead.");
         }
 
@@ -68,7 +59,7 @@ public class BetterFpsInstaller {
         info("Checking for updates...");
         try {
             checkUpdates(installer);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             info("Couldn't check for updates");
         }
     }
@@ -78,38 +69,38 @@ public class BetterFpsInstaller {
         lang = lang.toLowerCase();
 
         try {
-            Charset utf8 = Charset.forName("UTF-8");
+            Charset utf8 = StandardCharsets.UTF_8;
 
             info("Loading en_us...");
             InputStream in = getResource(String.format(langPattern, "en_us"));
-            if(in != null) i18n.load(new InputStreamReader(in, utf8));
+            if (in != null) i18n.load(new InputStreamReader(in, utf8));
 
-            if(!lang.equals("en_us")) {
+            if (!lang.equals("en_us")) {
                 info("Loading %s...", lang);
                 in = getResource(String.format(langPattern, lang));
-                if(in != null) i18n.load(new InputStreamReader(in, utf8));
+                if (in != null) i18n.load(new InputStreamReader(in, utf8));
             }
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             error("Couldn't load the i18n data (%s)", lang);
             ex.printStackTrace();
         }
     }
 
-    public static void info(String log, Object ... data) {
-        System.out.println(String.format(log, data));
+    public static void info(String log, Object... data) {
+        System.out.printf((log) + "%n", data);
     }
 
-    public static void error(String log, Object ... data) {
-        System.err.println(String.format(log, data));
+    public static void error(String log, Object... data) {
+        System.err.printf((log) + "%n", data);
     }
 
     public static InputStream getResource(String path) {
         return BetterFpsInstaller.class.getClassLoader().getResourceAsStream(path);
     }
 
-    public static String i18n(String id, Object ... data) {
+    public static String i18n(String id, Object... data) {
         String msg = i18n.getProperty(id, id);
-        if(data.length > 0) {
+        if (data.length > 0) {
             return String.format(msg, data);
         } else {
             return msg;
@@ -121,9 +112,9 @@ public class BetterFpsInstaller {
         String userHomeDir = System.getProperty("user.home", ".");
         String osType = System.getProperty("os.name").toLowerCase();
 
-        if((osType.contains("win")) && (System.getenv("APPDATA") != null)) {
+        if ((osType.contains("win")) && (System.getenv("APPDATA") != null)) {
             return new File(System.getenv("APPDATA"), ".minecraft");
-        } else if(osType.contains("mac")) {
+        } else if (osType.contains("mac")) {
             return new File(userHomeDir, "Library/Application Support/minecraft");
         } else {
             return new File(userHomeDir, ".minecraft");
@@ -137,19 +128,19 @@ public class BetterFpsInstaller {
         JsonObject versions = json.get("versions").asObject();
 
         JsonValue elem = versions.get(BetterFps.MC_VERSION);
-        if(elem == null) return;
+        if (elem == null) return;
         JsonArray array = elem.asArray();
-        if(array.isEmpty()) return;
+        if (array.isEmpty()) return;
 
         JsonObject latest = array.get(0).asObject();
         String version = latest.getString("name", BetterFps.VERSION);
 
-        if(!version.contains(BetterFps.VERSION)) {
+        if (!version.contains(BetterFps.VERSION)) {
             String title = i18n("betterfps.update.available", version);
             String msg = title + "\n" + i18n("betterfps.update.prompt");
             int r = JOptionPane.showConfirmDialog(installer, msg, title, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
-            if(r == JOptionPane.YES_OPTION) {
+            if (r == JOptionPane.YES_OPTION) {
                 Desktop desktop = Desktop.getDesktop();
                 desktop.browse(new URI(latest.getString("url", BetterFps.URL)));
                 installer.setVisible(false);
@@ -159,14 +150,14 @@ public class BetterFpsInstaller {
     }
 
     public static void saveAlgorithm() throws IOException {
-        if(ALGORITHM == null) return;
-        if(GAME_DIR == null) GAME_DIR = getSuggestedMinecraftFolder();
+        if (ALGORITHM == null) return;
+        if (GAME_DIR == null) GAME_DIR = getSuggestedMinecraftFolder();
         info("Changing the algorithm to %s...", ALGORITHM);
 
         File config = new File(GAME_DIR, "config/betterfps.json");
         JsonObject json;
 
-        if(config.exists()) {
+        if (config.exists()) {
             FileReader reader = new FileReader(config);
             json = Json.parse(reader).asObject();
             reader.close();
@@ -199,10 +190,10 @@ public class BetterFpsInstaller {
 
         URL modFile = BetterFpsInstaller.class.getProtectionDomain().getCodeSource().getLocation();
         InputStream is = modFile.openStream();
-        OutputStream os = new FileOutputStream(output);
+        OutputStream os = Files.newOutputStream(output.toPath());
         byte[] buffer = new byte[1024];
         int length;
-        while((length = is.read(buffer)) > 0) {
+        while ((length = is.read(buffer)) > 0) {
             os.write(buffer, 0, length);
         }
         is.close();
@@ -249,7 +240,7 @@ public class BetterFpsInstaller {
         String ver = String.format("%s:%s:%s", LIBRARY_IDENTIFIER, LIBRARY_NAME, VERSION_NAME);
         libraries.add(new JsonObject().add("name", ver));
 
-        for(String lib : LIBRARIES) {
+        for (String lib : LIBRARIES) {
             libraries.add(new JsonObject().add("name", lib));
         }
 
@@ -276,12 +267,12 @@ public class BetterFpsInstaller {
     }
 
     public static List<String> getProfileNames(JsonObject launcherProfiles) {
-        List<String> profileNames = new ArrayList<String>();
+        List<String> profileNames = new ArrayList<>();
         JsonObject profs = launcherProfiles.get("profiles").asObject();
 
-        for(String prof : profs.names()) {
+        for (String prof : profs.names()) {
             JsonObject obj = profs.get(prof).asObject();
-            if(!obj.getString("type", "custom").equalsIgnoreCase("custom")) continue;
+            if (!obj.getString("type", "custom").equalsIgnoreCase("custom")) continue;
             profileNames.add(obj.getString("name", prof));
         }
 
@@ -292,10 +283,10 @@ public class BetterFpsInstaller {
         JsonObject profs = launcherProfiles.get("profiles").asObject();
         JsonObject selectedProfile = null;
 
-        for(String prof : profs.names()) {
+        for (String prof : profs.names()) {
             JsonObject obj = profs.get(prof).asObject();
             String name = obj.getString("name", prof);
-            if(name.equalsIgnoreCase(selectedProfileName)) {
+            if (name.equalsIgnoreCase(selectedProfileName)) {
                 selectedProfile = obj;
                 break;
             }
@@ -303,7 +294,7 @@ public class BetterFpsInstaller {
 
         String date = getDateISO();
 
-        if(selectedProfile == null) {
+        if (selectedProfile == null) {
             selectedProfile = new JsonObject();
             selectedProfile.add("name", selectedProfileName);
             selectedProfile.add("type", "custom");

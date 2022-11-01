@@ -1,8 +1,5 @@
 package guichaguri.betterfps.tweaker;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -10,8 +7,11 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
 /**
- *
  * @author Guilherme Chaguri
  */
 public enum Mappings {
@@ -61,7 +61,7 @@ public enum Mappings {
     M_freeMemory(Type.METHOD, "freeMemory"), // Minecraft
     M_initGui(Type.METHOD, "initGui"), // GuiScreen
     M_startServer(Type.METHOD, "startServer"), // MinecraftServer
-    M_captureDroppedItems(Type.METHOD, "captureDroppedItems"), // TileEntityHopper
+    M_pullItems(Type.METHOD, "pullItems"), // TileEntityHopper
     M_getHopperInventory(Type.METHOD, "getHopperInventory"), // TileEntityHopper
 
     F_memoryReserve(Type.FIELD, "memoryReserve"), // Minecraft
@@ -69,26 +69,30 @@ public enum Mappings {
 
     public static void loadMappings(InputStream srg) throws IOException {
         List<String> lines = IOUtils.readLines(srg, "UTF-8");
-        for(String line : lines) {
+        for (String line : lines) {
             String[] m = line.split(" ");
             String identifier = m[m.length - 1];
 
-            for(Mappings mp : values()) {
-                if(m[0].equals("CL:")) {
-                    if(m.length >= 4 && mp.type == Type.CLASS && mp.identifier.equals(identifier)) {
-                        mp.deobfName = m[2];
-                        mp.obfName = m[1];
-                    }
-                } else if(m[0].equals("FD:")) {
-                    if(m.length >= 4 && mp.type == Type.FIELD && mp.identifier.equals(identifier)) {
-                        loadNames(m, mp, 2, 1);
-                    }
-                } else if(m[0].equals("MD:")) {
-                    if(m.length >= 6 && mp.type == Type.METHOD && mp.identifier.equals(identifier)) {
-                        loadNames(m, mp, 3, 1);
-                        mp.deobfDesc = m[4];
-                        mp.obfDesc = m[2];
-                    }
+            for (Mappings mp : values()) {
+                switch (m[0]) {
+                    case "CL:":
+                        if (m.length >= 4 && mp.type == Type.CLASS && mp.identifier.equals(identifier)) {
+                            mp.deobfName = m[2];
+                            mp.obfName = m[1];
+                        }
+                        break;
+                    case "FD:":
+                        if (m.length >= 4 && mp.type == Type.FIELD && mp.identifier.equals(identifier)) {
+                            loadNames(m, mp, 2, 1);
+                        }
+                        break;
+                    case "MD:":
+                        if (m.length >= 6 && mp.type == Type.METHOD && mp.identifier.equals(identifier)) {
+                            loadNames(m, mp, 3, 1);
+                            mp.deobfDesc = m[4];
+                            mp.obfDesc = m[2];
+                        }
+                        break;
                 }
             }
         }
@@ -106,9 +110,9 @@ public enum Mappings {
 
     public final Type type;
     public final String identifier;
-    protected String deobfName, obfName;
-    protected String ownerDeobfName, ownerObfName;
-    protected String deobfDesc, obfDesc;
+    private String deobfName, obfName;
+    private String ownerDeobfName, ownerObfName;
+    private String deobfDesc, obfDesc;
 
     Mappings(Type type, String identifier) {
         this.type = type;
@@ -131,7 +135,7 @@ public enum Mappings {
     }
 
     public boolean isDesc(String n) {
-        return (deobfDesc != null && n.equals(deobfDesc)) || (obfDesc != null && n.equals(obfDesc));
+        return (n.equals(deobfDesc)) || (n.equals(obfDesc));
     }
 
     public boolean isOwner(String n) {

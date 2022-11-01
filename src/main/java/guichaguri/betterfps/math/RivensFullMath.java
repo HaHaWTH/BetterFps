@@ -4,7 +4,6 @@ package guichaguri.betterfps.math;
  * @author Guilherme Chaguri
  */
 public class RivensFullMath {
-
     private static final float BF_SIN_TO_COS;
     private static final int BF_SIN_BITS, BF_SIN_MASK, BF_SIN_COUNT;
     private static final float BF_radFull, BF_radToIndex;
@@ -27,7 +26,7 @@ public class RivensFullMath {
     }
 
     public static float sin(float rad) {
-        return BF_sinFull[(int)(rad * BF_radToIndex) & BF_SIN_MASK];
+        return BF_sinFull[(int) (rad * BF_radToIndex) & BF_SIN_MASK];
     }
 
     public static float cos(float rad) {

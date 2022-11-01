@@ -13,7 +13,6 @@ import net.minecraft.client.resources.IResourceManager;
  * @author Guilherme Chaguri
  */
 public abstract class FogPatch extends EntityRenderer {
-
     public FogPatch(Minecraft mc, IResourceManager manager) {
         super(mc, manager);
     }
@@ -22,7 +21,7 @@ public abstract class FogPatch extends EntityRenderer {
     @Condition(Conditions.FOG_DISABLED)
     @Override
     public void setupFog(int startCoords, float partialTicks) {
-        if(startCoords != -1) {
+        if (startCoords != -1) {
             GlStateManager.disableFog();
             return;
         }

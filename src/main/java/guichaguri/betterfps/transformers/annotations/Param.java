@@ -7,12 +7,12 @@ import java.lang.annotation.Target;
 
 /**
  * Defines which local variable this parameter will receive from the patched method
+ *
  * @author Guilherme Chaguri
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.PARAMETER)
 public @interface Param {
-
     /**
      * The local variable index
      */

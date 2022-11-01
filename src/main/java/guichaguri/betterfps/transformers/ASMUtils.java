@@ -2,22 +2,23 @@ package guichaguri.betterfps.transformers;
 
 import guichaguri.betterfps.transformers.annotations.Param;
 import guichaguri.betterfps.tweaker.Mappings;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Predicate;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Predicate;
+
 /**
  * @author Guilherme Chaguri
  */
+@SuppressWarnings("unchecked")
 public class ASMUtils {
-
     public static ClassNode readClass(byte[] bytes, int flags) {
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(bytes);
@@ -32,29 +33,29 @@ public class ASMUtils {
     }
 
     public static MethodNode findMethod(ClassNode node, Mappings mappings) {
-        for(MethodNode m : node.methods) {
-            if(mappings.is(m.name, m.desc)) return m;
+        for (MethodNode m : node.methods) {
+            if (mappings.is(m.name, m.desc)) return m;
         }
         return null;
     }
 
     public static FieldNode findField(ClassNode node, Mappings mappings) {
-        for(FieldNode m : node.fields) {
-            if(mappings.is(m.name, m.desc)) return m;
+        for (FieldNode m : node.fields) {
+            if (mappings.is(m.name, m.desc)) return m;
         }
         return null;
     }
 
     public static MethodNode findMethod(ClassNode node, String name, String desc) {
-        for(MethodNode m : node.methods) {
-            if(m.name.equals(name) && m.desc.equals(desc)) return m;
+        for (MethodNode m : node.methods) {
+            if (m.name.equals(name) && m.desc.equals(desc)) return m;
         }
         return null;
     }
 
     public static FieldNode findField(ClassNode node, String name, String desc) {
-        for(FieldNode f : node.fields) {
-            if(f.name.equals(name) && f.desc.equals(desc)) return f;
+        for (FieldNode f : node.fields) {
+            if (f.name.equals(name) && f.desc.equals(desc)) return f;
         }
         return null;
     }
@@ -64,8 +65,8 @@ public class ASMUtils {
     }
 
     private static int getNextAvailableIndex(List<LocalVariableNode> nodes, int index) {
-        for(LocalVariableNode node : nodes) {
-            if(index == node.index) {
+        for (LocalVariableNode node : nodes) {
+            if (index == node.index) {
                 return getNextAvailableIndex(nodes, node.index + 1);
             }
         }
@@ -79,7 +80,7 @@ public class ASMUtils {
 
     public static void appendNodeList(InsnList initial, InsnList extra) {
         List<AbstractInsnNode> returns = findReturns(initial);
-        for(AbstractInsnNode r : returns) {
+        for (AbstractInsnNode r : returns) {
             initial.insertBefore(r, extra);
         }
     }
@@ -90,9 +91,9 @@ public class ASMUtils {
     }
 
     public static void removeLastReturn(InsnList list) {
-        for(int i = list.size() - 1; i >= 0; i--) {
+        for (int i = list.size() - 1; i >= 0; i--) {
             AbstractInsnNode node = list.get(i);
-            if(isReturn(node.getOpcode())) {
+            if (isReturn(node.getOpcode())) {
                 list.remove(node);
                 break;
             }
@@ -101,10 +102,10 @@ public class ASMUtils {
 
     public static void setVariableToMaxPeriod(AbstractInsnNode[] nodes, LocalVariableNode node) {
         LabelNode first = null, last = null;
-        for(AbstractInsnNode n : nodes) {
-            if(n instanceof LabelNode) {
-                last = (LabelNode)n;
-                if(first == null) first = last;
+        for (AbstractInsnNode n : nodes) {
+            if (n instanceof LabelNode) {
+                last = (LabelNode) n;
+                if (first == null) first = last;
             }
         }
         node.start = first;
@@ -112,11 +113,11 @@ public class ASMUtils {
     }
 
     public static AnnotationNode getAnnotation(List<AnnotationNode> annotations, Class<? extends Annotation> type) {
-        if(annotations == null || annotations.isEmpty()) return null;
+        if (annotations == null || annotations.isEmpty()) return null;
 
         String t = Type.getDescriptor(type);
-        for(AnnotationNode node : annotations) {
-            if(node.desc.equals(t)) return node;
+        for (AnnotationNode node : annotations) {
+            if (node.desc.equals(t)) return node;
         }
         return null;
     }
@@ -125,33 +126,33 @@ public class ASMUtils {
         return getAnnotationValue(node, k, String.class);
     }
 
-    public static <T extends Object> T getAnnotationValue(AnnotationNode node, String k, Class<T> type) {
+    public static <T> T getAnnotationValue(AnnotationNode node, String k, Class<T> type) {
         return getAnnotationValue(node, k, type, null);
     }
 
-    public static <T extends Object> T getAnnotationValue(AnnotationNode node, String k, Class<T> type, T def) {
-        if(node.values == null) return def;
+    public static <T> T getAnnotationValue(AnnotationNode node, String k, Class<T> type, T def) {
+        if (node.values == null) return def;
         boolean isEnum = type.isEnum();
 
-        for(int x = 0; x < node.values.size() - 1; x += 2) {
+        for (int x = 0; x < node.values.size() - 1; x += 2) {
 
             Object key = node.values.get(x);
             Object value = node.values.get(x + 1);
 
-            if(!(key instanceof String) || !key.equals(k)) continue;
+            if (!(key instanceof String) || !key.equals(k)) continue;
 
-            if(isEnum) {
+            if (isEnum) {
 
-                if(value instanceof String[]) {
-                    return (T)Enum.valueOf((Class<? extends Enum>)type, ((String[])value)[1]);
+                if (value instanceof String[]) {
+                    return (T) Enum.valueOf((Class<? extends Enum>) type, ((String[]) value)[1]);
                 }
 
             } else {
 
-                if(value instanceof String[]) {
-                    return (T)(((String[])value)[1]);
+                if (value instanceof String[]) {
+                    return (T) (((String[]) value)[1]);
                 } else {
-                    return (T)value;
+                    return (T) value;
                 }
 
             }
@@ -167,35 +168,35 @@ public class ASMUtils {
         Type[] t = Type.getArgumentTypes(desc);
         String[] r = new String[t.length];
 
-        for(int i = 0; i < t.length; i++) {
+        for (int i = 0; i < t.length; i++) {
             r[i] = t[i].getDescriptor();
         }
         return r;
     }
 
     private static boolean isNode(AbstractInsnNode node, Class type, int opcode, String owner, String name, String desc) {
-        if(opcode != -1 && node.getOpcode() != opcode) return false;
-        if(node.getClass() != type) return false;
-        if(type == MethodInsnNode.class) {
-            MethodInsnNode method = (MethodInsnNode)node;
-            if(owner != null && !method.owner.equals(owner)) return false;
-            if(name != null && !method.name.equals(name)) return false;
-            if(desc != null && !method.desc.equals(desc)) return false;
-        } else if(type == FieldInsnNode.class) {
-            FieldInsnNode field = (FieldInsnNode)node;
-            if(owner != null && !field.owner.equals(owner)) return false;
-            if(name != null && !field.name.equals(name)) return false;
-            if(desc != null && !field.desc.equals(desc)) return false;
+        if (opcode != -1 && node.getOpcode() != opcode) return false;
+        if (node.getClass() != type) return false;
+        if (type == MethodInsnNode.class) {
+            MethodInsnNode method = (MethodInsnNode) node;
+            if (owner != null && !method.owner.equals(owner)) return false;
+            if (name != null && !method.name.equals(name)) return false;
+            return desc == null || method.desc.equals(desc);
+        } else if (type == FieldInsnNode.class) {
+            FieldInsnNode field = (FieldInsnNode) node;
+            if (owner != null && !field.owner.equals(owner)) return false;
+            if (name != null && !field.name.equals(name)) return false;
+            return desc == null || field.desc.equals(desc);
         }
         return true;
     }
 
     private static boolean isNode(AbstractInsnNode node, Class type, int opcode, Mappings name) {
-        if(node.getOpcode() != opcode || node.getClass() != type) return false;
-        if(type == MethodInsnNode.class) {
-            if(!name.is((MethodInsnNode)node)) return false;
-        } else if(type == FieldInsnNode.class) {
-            if(!name.is((FieldInsnNode)node)) return false;
+        if (node.getOpcode() != opcode || node.getClass() != type) return false;
+        if (type == MethodInsnNode.class) {
+            return name.is((MethodInsnNode) node);
+        } else if (type == FieldInsnNode.class) {
+            return name.is((FieldInsnNode) node);
         }
         return true;
     }
@@ -204,11 +205,11 @@ public class ASMUtils {
                                                                  String owner, String name, String desc) {
         List<T> list = null;
 
-        for(int i = 0; i < nodes.size(); i++) {
+        for (int i = 0; i < nodes.size(); i++) {
             AbstractInsnNode node = nodes.get(i);
-            if(isNode(node, type, opcode, owner, name, desc)) {
-                if(list == null) list = new ArrayList<T>();
-                list.add((T)node);
+            if (isNode(node, type, opcode, owner, name, desc)) {
+                if (list == null) list = new ArrayList<>();
+                list.add((T) node);
             }
         }
 
@@ -220,18 +221,18 @@ public class ASMUtils {
     }
 
     public static <T extends AbstractInsnNode> T findNode(InsnList nodes, Class<T> type, int index, Predicate<T> predicate) {
-        if(index >= 0) {
-            for(int i = 0; i < nodes.size(); i++) {
+        if (index >= 0) {
+            for (int i = 0; i < nodes.size(); i++) {
                 AbstractInsnNode node = nodes.get(i);
-                if(node.getClass() == type && predicate.test((T)node)) {
-                    if(index-- <= 0) return (T)node;
+                if (node.getClass() == type && predicate.test((T) node)) {
+                    if (index-- <= 0) return (T) node;
                 }
             }
         } else {
-            for(int i = nodes.size() - 1; i >= 0; i--) {
+            for (int i = nodes.size() - 1; i >= 0; i--) {
                 AbstractInsnNode node = nodes.get(i);
-                if(node.getClass() == type && predicate.test((T)node)) {
-                    if(index++ >= -1) return (T)node;
+                if (node.getClass() == type && predicate.test((T) node)) {
+                    if (index++ >= -1) return (T) node;
                 }
             }
         }
@@ -241,10 +242,10 @@ public class ASMUtils {
 
     public static <T extends AbstractInsnNode> T findNode(InsnList nodes, Class<T> type, int opcode, int index,
                                                           String owner, String name, String desc) {
-        for(int i = 0; i < nodes.size(); i++) {
+        for (int i = 0; i < nodes.size(); i++) {
             AbstractInsnNode node = nodes.get(i);
-            if(isNode(node, type, opcode, owner, name, desc)) {
-                if(index-- <= 0) return (T)node;
+            if (isNode(node, type, opcode, owner, name, desc)) {
+                if (index-- <= 0) return (T) node;
             }
         }
 
@@ -252,10 +253,10 @@ public class ASMUtils {
     }
 
     public static <T extends AbstractInsnNode> T findNode(InsnList nodes, Class<T> type, int opcode, int index, Mappings name) {
-        for(int i = 0; i < nodes.size(); i++) {
+        for (int i = 0; i < nodes.size(); i++) {
             AbstractInsnNode node = nodes.get(i);
-            if(isNode(node, type, opcode, name)) {
-                if(index-- <= 0) return (T)node;
+            if (isNode(node, type, opcode, name)) {
+                if (index-- <= 0) return (T) node;
             }
         }
 
@@ -277,15 +278,15 @@ public class ASMUtils {
     }
 
     public static LocalVariableNode findVariable(MethodNode method, int index) {
-        for(LocalVariableNode var : method.localVariables) {
-            if(var.index == index) return var;
+        for (LocalVariableNode var : method.localVariables) {
+            if (var.index == index) return var;
         }
         return null;
     }
 
     public static LocalVariableNode findVariable(MethodNode method, Mappings mappings) {
-        for(LocalVariableNode var : method.localVariables) {
-            if(mappings.is(Type.getType(var.desc).getClassName())) return var;
+        for (LocalVariableNode var : method.localVariables) {
+            if (mappings.is(Type.getType(var.desc).getClassName())) return var;
         }
         return null;
     }
@@ -296,16 +297,15 @@ public class ASMUtils {
         List<AnnotationNode>[] array = method.visibleParameterAnnotations;
         //String[] nodes = ;
 
-        for(int i = 0; i < array.length; i++) {
+        for (int i = 0; i < array.length; i++) {
             List<AnnotationNode> annotations = array[i];
 
-            if(annotations != null && !annotations.isEmpty()) {
+            if (annotations != null && !annotations.isEmpty()) {
                 AnnotationNode annotation = getAnnotation(annotations, Param.class);
-                if(annotation != null) {
+                if (annotation != null) {
                     Integer value = getAnnotationValue(annotation, "value", Integer.class);
-                    if(value != null) {
+                    if (value != null) {
                         variables[i] = value;
-                        continue;
                     }
                 }
             }
@@ -325,8 +325,8 @@ public class ASMUtils {
 
     public static void removeLabelSection(InsnList list, LabelNode label) {
         Iterator<AbstractInsnNode> i = list.iterator(list.indexOf(label) + 1);
-        for(AbstractInsnNode node = i.next(); i.hasNext(); node = i.next()) {
-            if(node instanceof LabelNode) break;
+        for (AbstractInsnNode node = i.next(); i.hasNext(); node = i.next()) {
+            if (node instanceof LabelNode) break;
             i.remove();
         }
     }
@@ -334,14 +334,14 @@ public class ASMUtils {
     public static boolean isNodeInside(InsnList list, AbstractInsnNode node, LabelNode from, LabelNode to) {
         boolean inside = false;
 
-        for(int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             AbstractInsnNode n = list.get(i);
-            if(n == from) {
+            if (n == from) {
                 inside = true;
-            } else if(n == to) {
+            } else if (n == to) {
                 return false;
             }
-            if(n == node) {
+            if (n == node) {
                 return inside;
             }
         }
@@ -358,10 +358,10 @@ public class ASMUtils {
 
     public static int indexOf(Type[] types, Type[] needle) {
         int count = 0;
-        for(int i = 0; i < types.length; i++) {
-            if(types[i].getDescriptor().equals(needle[count].getDescriptor())) {
+        for (int i = 0; i < types.length; i++) {
+            if (types[i].getDescriptor().equals(needle[count].getDescriptor())) {
                 count++;
-                if(count >= needle.length) {
+                if (count >= needle.length) {
                     return i - count;
                 }
             } else {
@@ -372,40 +372,40 @@ public class ASMUtils {
     }
 
     private static Object findVariable(MethodNode sourceMethod, ClassNode targetClass, MethodNode targetMethod,
-                                      AbstractInsnNode pos, int i, String desc, boolean isStatic,
-                                      int targetParamsStart, int targetParamsEnd) {
+                                       AbstractInsnNode pos, int i, String desc, boolean isStatic,
+                                       int targetParamsStart, int targetParamsEnd) {
 
         // Parses the @Param annotation returning the requested variable
         List<AnnotationNode>[] annotations = sourceMethod.invisibleParameterAnnotations;
-        if(annotations != null && annotations.length > i) {
+        if (annotations != null && annotations.length > i) {
             AnnotationNode annotation = getAnnotation(annotations[i], Param.class);
 
-            if(annotation != null) {
+            if (annotation != null) {
                 int index = getAnnotationValue(annotation, "value", int.class, -1);
                 LocalVariableNode var = index != -1 ? findVariable(sourceMethod, index) : null;
 
-                if(var != null && var.desc.equals(desc)) {
+                if (var != null && var.desc.equals(desc)) {
                     return var;
                 }
             }
         }
 
         // Uses the pattern found in the desc to use the right variable order from the target method
-        if(targetParamsStart != -1 && i >= targetParamsStart && i < targetParamsEnd) {
+        if (targetParamsStart != -1 && i >= targetParamsStart && i < targetParamsEnd) {
             return targetMethod.localVariables.get(i - targetParamsStart + (isStatic ? 0 : 1));
         }
 
         // Tries to find local variables that match the same desc
-        for(LocalVariableNode var : targetMethod.localVariables) {
-            if(var.desc.equals(desc) && isNodeInside(targetMethod.instructions, pos, var.start, var.end)) {
+        for (LocalVariableNode var : targetMethod.localVariables) {
+            if (var.desc.equals(desc) && isNodeInside(targetMethod.instructions, pos, var.start, var.end)) {
                 return var;
             }
         }
 
         // Tries to find fields that match the same desc (and are accessible)
-        for(FieldNode field : targetClass.fields) {
-            if(isStatic && !hasAccess(field, Opcodes.ACC_STATIC)) continue;
-            if(field.desc.equals(desc)) {
+        for (FieldNode field : targetClass.fields) {
+            if (isStatic && !hasAccess(field, Opcodes.ACC_STATIC)) continue;
+            if (field.desc.equals(desc)) {
                 return field;
             }
         }
@@ -428,32 +428,32 @@ public class ASMUtils {
         int targetParamsEnd = targetParamsStart + targetParameters.length;
         boolean isStatic = hasAccess(targetMethod, Opcodes.ACC_STATIC);
 
-        for(int i = 0; i < parameters.length; i++) {
+        for (int i = 0; i < parameters.length; i++) {
             String d = parameters[i].getDescriptor();
 
             values[i] = findVariable(sourceMethod, targetClass, targetMethod, pos,
-                                    i, d, isStatic, targetParamsStart, targetParamsEnd);
+                    i, d, isStatic, targetParamsStart, targetParamsEnd);
         }
         return values;
     }
 
     public static AbstractInsnNode getReadNodeForVariable(ClassNode clazz, Object variable) {
-        if(variable instanceof LocalVariableNode) {
-            LocalVariableNode var = (LocalVariableNode)variable;
+        if (variable instanceof LocalVariableNode) {
+            LocalVariableNode var = (LocalVariableNode) variable;
             return new VarInsnNode(Type.getType(var.desc).getOpcode(Opcodes.ILOAD), var.index);
-        } else if(variable instanceof FieldNode) {
-            FieldNode field = (FieldNode)variable;
+        } else if (variable instanceof FieldNode) {
+            FieldNode field = (FieldNode) variable;
             return new FieldInsnNode(Opcodes.GETFIELD, clazz.name, field.name, field.desc);
         }
         return new InsnNode(Opcodes.ACONST_NULL);
     }
 
     public static AbstractInsnNode getWriteNodeForVariable(ClassNode clazz, Object variable) {
-        if(variable instanceof LocalVariableNode) {
-            LocalVariableNode var = (LocalVariableNode)variable;
+        if (variable instanceof LocalVariableNode) {
+            LocalVariableNode var = (LocalVariableNode) variable;
             return new VarInsnNode(Type.getType(var.desc).getOpcode(Opcodes.ISTORE), var.index);
-        } else if(variable instanceof FieldNode) {
-            FieldNode field = (FieldNode)variable;
+        } else if (variable instanceof FieldNode) {
+            FieldNode field = (FieldNode) variable;
             return new FieldInsnNode(Opcodes.PUTFIELD, clazz.name, field.name, field.desc);
         }
         return null;
@@ -470,21 +470,21 @@ public class ASMUtils {
         InsnList list = new InsnList();
         int stack = parameters.length;
 
-        if(!isStatic) {
+        if (!isStatic) {
             list.add(new VarInsnNode(Opcodes.ALOAD, 0));
             stack++;
         }
 
-        for(Object o : parameters) {
+        for (Object o : parameters) {
             list.add(getReadNodeForVariable(targetClass, o));
         }
 
-        if(targetMethod.maxStack < stack) targetMethod.maxStack = stack; // Fix max stack if needed
+        if (targetMethod.maxStack < stack) targetMethod.maxStack = stack; // Fix max stack if needed
 
         int opcode = isStatic ? Opcodes.INVOKESTATIC : Opcodes.INVOKEVIRTUAL;
         list.add(new MethodInsnNode(opcode, targetClass.name, sourceMethod.name, sourceMethod.desc, false));
 
-        if(ignoreReturnValue && Type.getReturnType(sourceMethod.desc) != Type.VOID_TYPE) {
+        if (ignoreReturnValue && Type.getReturnType(sourceMethod.desc) != Type.VOID_TYPE) {
             list.add(new InsnNode(Opcodes.POP)); // Pop the return value
         }
 
@@ -497,18 +497,18 @@ public class ASMUtils {
     }
 
     public static AbstractInsnNode findHead(InsnList list) {
-        for(int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             AbstractInsnNode node = list.get(i);
-            if(node instanceof LabelNode) return node;
+            if (node instanceof LabelNode) return node;
         }
         return list.get(0);
     }
 
     public static List<AbstractInsnNode> findReturns(InsnList list) {
-        List<AbstractInsnNode> nodes = new ArrayList<AbstractInsnNode>();
-        for(int i = 0; i < list.size(); i++) {
+        List<AbstractInsnNode> nodes = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
             AbstractInsnNode node = list.get(i);
-            if(isReturn(node.getOpcode())) nodes.add(node);
+            if (isReturn(node.getOpcode())) nodes.add(node);
         }
         return nodes;
     }
@@ -525,30 +525,30 @@ public class ASMUtils {
 
         InsnList list = method.instructions;
 
-        for(int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             AbstractInsnNode node = list.get(i);
 
-            if(node instanceof MethodInsnNode) { // Method calls
-                MethodInsnNode m = (MethodInsnNode)node;
+            if (node instanceof MethodInsnNode) { // Method calls
+                MethodInsnNode m = (MethodInsnNode) node;
 
                 m.desc = m.desc.replaceAll(classNameDesc, replacementDesc);
-                if(m.owner.equals(className)) m.owner = replacement;
+                if (m.owner.equals(className)) m.owner = replacement;
 
-            } else if(node instanceof FieldInsnNode) { // Field read/write
-                FieldInsnNode f = (FieldInsnNode)node;
+            } else if (node instanceof FieldInsnNode) { // Field read/write
+                FieldInsnNode f = (FieldInsnNode) node;
 
                 f.desc = f.desc.replaceAll(classNameDesc, replacementDesc);
-                if(f.owner.equals(className)) f.owner = replacement;
+                if (f.owner.equals(className)) f.owner = replacement;
 
-            } else if(node instanceof TypeInsnNode) { // Type (for arrays, casts, instanceof, etc)
-                TypeInsnNode t = (TypeInsnNode)node;
+            } else if (node instanceof TypeInsnNode) { // Type (for arrays, casts, instanceof, etc)
+                TypeInsnNode t = (TypeInsnNode) node;
 
                 t.desc = t.desc.replaceAll(classNameDesc, replacementDesc);
             }
         }
 
-        for(LocalVariableNode var : method.localVariables) { // Any local variables (including "this")
-            if(var.desc.equals(classNameDesc)) var.desc = replacementDesc;
+        for (LocalVariableNode var : method.localVariables) { // Any local variables (including "this")
+            if (var.desc.equals(classNameDesc)) var.desc = replacementDesc;
         }
     }
 
@@ -561,7 +561,7 @@ public class ASMUtils {
 
     /**
      * Replaces super calls to a replaced method from the method
-     *
+     * <p>
      * Tries to find "super" calls to the replaced method, if any, renames the method
      * If the replaced method is null, it changes the method call to the super-super class
      */
@@ -570,30 +570,30 @@ public class ASMUtils {
         boolean addedReplacedMethod = false;
         boolean hasReplacedMethod = replacedMethod != null;
 
-        for(int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             AbstractInsnNode node = list.get(i);
 
-            if(node.getOpcode() != Opcodes.INVOKESPECIAL) continue;
-            if(!(node instanceof MethodInsnNode)) continue;
-            MethodInsnNode m = (MethodInsnNode)node;
+            if (node.getOpcode() != Opcodes.INVOKESPECIAL) continue;
+            if (!(node instanceof MethodInsnNode)) continue;
+            MethodInsnNode m = (MethodInsnNode) node;
 
-            if(!m.owner.equals(replacedClass.name)) continue;
-            if(hasReplacedMethod && (!m.name.equals(replacedMethod.name) || !m.desc.equals(replacedMethod.desc))) continue;
-
-            if(!hasReplacedMethod) {
-
-                // Replace the owner class to an upper level to prevent infinite loops
-                if(m.owner.equals(replacedClass.name)) m.owner = replacedClass.superName;
+            if (!m.owner.equals(replacedClass.name)) continue;
+            if (hasReplacedMethod && (!m.name.equals(replacedMethod.name) || !m.desc.equals(replacedMethod.desc)))
                 continue;
 
-            } else if(!addedReplacedMethod) {
+            if (!hasReplacedMethod) {
+                // Replace the owner class to an upper level to prevent infinite loops
+                m.owner = replacedClass.superName;
+                continue;
+
+            } else if (!addedReplacedMethod) {
 
                 replacedMethod.name += "_BetterFps";
 
                 // Not really required for Oracle's JVM, but another JVM implementation might require this change
                 m.setOpcode(Opcodes.INVOKEVIRTUAL);
 
-                if(!replacedClass.methods.contains(replacedMethod)) {
+                if (!replacedClass.methods.contains(replacedMethod)) {
                     replacedClass.methods.add(replacedMethod);
                 }
                 addedReplacedMethod = true;
@@ -608,15 +608,15 @@ public class ASMUtils {
      * Merges {@link LocalVariableNode} from a method to another method, while taking care of duplicate variables
      */
     public static void mergeLocalVariables(MethodNode from, MethodNode to) {
-        for(LocalVariableNode var : from.localVariables) {
+        for (LocalVariableNode var : from.localVariables) {
             LocalVariableNode var2 = ASMUtils.findVariable(to, var.index);
 
-            if(var2 == null) {
+            if (var2 == null) {
                 // No variable with this index, we can just add it
                 to.localVariables.add(var);
                 continue;
             }
-            if(var2.desc.equals(var.desc)) {
+            if (var2.desc.equals(var.desc)) {
                 // The variable exists and it's the same desc, we can just reuse it
                 continue;
             }
@@ -628,11 +628,11 @@ public class ASMUtils {
             to.maxLocals++;
 
             InsnList list = from.instructions;
-            for(int i = 0; i < list.size(); i++) {
+            for (int i = 0; i < list.size(); i++) {
                 AbstractInsnNode node = list.get(i);
-                if(node instanceof VarInsnNode) {
-                    VarInsnNode varNode = (VarInsnNode)node;
-                    if(varNode.var == oldIndex) varNode.var = var.index;
+                if (node instanceof VarInsnNode) {
+                    VarInsnNode varNode = (VarInsnNode) node;
+                    if (varNode.var == oldIndex) varNode.var = var.index;
                 }
             }
         }
@@ -649,8 +649,8 @@ public class ASMUtils {
      * Copies a method to another class, taking care of references and replacement
      */
     public static void copyMethod(ClassNode original, ClassNode target, MethodNode method, MethodNode replacedMethod, boolean replace) {
-        if(replacedMethod != null) {
-            if(!replace) return;
+        if (replacedMethod != null) {
+            if (!replace) return;
             target.methods.remove(replacedMethod);
         }
 
@@ -670,14 +670,14 @@ public class ASMUtils {
      * Appends a method to another class, taking care of references
      */
     public static void appendMethod(ClassNode original, ClassNode target, MethodNode method, MethodNode targetMethod) {
-        if(targetMethod == null) {
+        if (targetMethod == null) {
             target.methods.add(method);
         } else {
             method.name += "_BetterFps";
 
             InsnList list = targetMethod.instructions;
             List<AbstractInsnNode> returns = findReturns(list);
-            for(AbstractInsnNode r : returns) {
+            for (AbstractInsnNode r : returns) {
                 list.insertBefore(r, insertMethod(original, method, target, targetMethod, r, true));
             }
         }
@@ -694,7 +694,7 @@ public class ASMUtils {
      * Prepends a method to another class, taking care of references
      */
     public static void prependMethod(ClassNode original, ClassNode target, MethodNode method, MethodNode targetMethod) {
-        if(targetMethod == null) {
+        if (targetMethod == null) {
             target.methods.add(method);
         } else {
             method.name += "_BetterFps";
@@ -716,8 +716,8 @@ public class ASMUtils {
      * Copies a field to another class, taking care of references, and replacement
      */
     public static void copyField(ClassNode original, ClassNode target, FieldNode field, FieldNode replacedField, boolean replace) {
-        if(replacedField != null) {
-            if(!replace) return;
+        if (replacedField != null) {
+            if (!replace) return;
             target.fields.remove(replacedField);
         }
 

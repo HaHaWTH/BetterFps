@@ -5,7 +5,6 @@ import guichaguri.betterfps.transformers.Conditions;
 import guichaguri.betterfps.transformers.annotations.Condition;
 import guichaguri.betterfps.transformers.annotations.Copy;
 import guichaguri.betterfps.transformers.annotations.Copy.Mode;
-import java.util.Arrays;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStainedGlass;
@@ -21,12 +20,13 @@ import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.Arrays;
+
 /**
  * @author Guilherme Chaguri
  */
 @Condition(Conditions.FAST_BEACON)
 public abstract class FastBeacon extends TileEntityBeacon {
-
     @Copy
     private int tickCount = 0;
 
@@ -34,9 +34,9 @@ public abstract class FastBeacon extends TileEntityBeacon {
     @Override
     public void update() {
         tickCount--;
-        if(tickCount == 100) {
+        if (tickCount == 100) {
             addEffectsToPlayers();
-        } else if(tickCount <= 0) {
+        } else if (tickCount <= 0) {
             updateBeacon();
             tickCount = 200;
         }
@@ -52,7 +52,7 @@ public abstract class FastBeacon extends TileEntityBeacon {
         int y = pos.getY();
         int z = pos.getZ();
 
-        if(world.isRemote) {
+        if (world.isRemote) {
             updateGlassLayers(x, y, z);
         } else {
             updateActivation(x, y, z);
@@ -70,15 +70,15 @@ public abstract class FastBeacon extends TileEntityBeacon {
         int y = pos.getY();
         int z = pos.getZ();
 
-        if(isComplete && levels > 0 && !world.isRemote && primaryEffect != null) {
+        if (isComplete && levels > 0 && !world.isRemote && primaryEffect != null) {
 
             int effectTicks = (9 + levels * 2) * 20;
             int radius = (levels + 1) * 10;
             byte effectLevel = 0;
             boolean hasSecondaryEffect = false;
 
-            if(levels >= 4) {
-                if(primaryEffect == secondaryEffect) {
+            if (levels >= 4) {
+                if (primaryEffect == secondaryEffect) {
                     effectLevel = 1;
                 } else {
                     hasSecondaryEffect = secondaryEffect != null;
@@ -88,10 +88,10 @@ public abstract class FastBeacon extends TileEntityBeacon {
             AxisAlignedBB box = new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
             box = box.grow(radius, radius, radius).expand(0.0D, world.getHeight(), 0.0D);
 
-            for(EntityPlayer player : world.getEntitiesWithinAABB(EntityPlayer.class, box)) {
+            for (EntityPlayer player : world.getEntitiesWithinAABB(EntityPlayer.class, box)) {
                 player.addPotionEffect(new PotionEffect(primaryEffect, effectTicks, effectLevel, true, true));
 
-                if(hasSecondaryEffect) {
+                if (hasSecondaryEffect) {
                     player.addPotionEffect(new PotionEffect(secondaryEffect, effectTicks, 0, true, true));
                 }
             }
@@ -112,35 +112,35 @@ public abstract class FastBeacon extends TileEntityBeacon {
 
         isComplete = true;
 
-        for(int blockY = y + 1; blockY < world.getActualHeight(); blockY++) {
+        for (int blockY = y + 1; blockY < world.getActualHeight(); blockY++) {
 
             BlockPos blockPos = new BlockPos(x, blockY, z);
             IBlockState state = world.getBlockState(blockPos);
             Block b = state.getBlock();
             float[] color = null;
 
-            if(b == Blocks.STAINED_GLASS) {
+            if (b == Blocks.STAINED_GLASS) {
                 color = EntitySheep.getDyeRgb(state.getValue(BlockStainedGlass.COLOR));
-            } else if(b == Blocks.STAINED_GLASS_PANE) {
+            } else if (b == Blocks.STAINED_GLASS_PANE) {
                 color = EntitySheep.getDyeRgb(state.getValue(BlockStainedGlassPane.COLOR));
             } else {
-                if(b != Blocks.BEDROCK && state.getLightOpacity() >= 15) {
+                if (b != Blocks.BEDROCK && state.getLightOpacity() >= 15) {
                     isComplete = false;
                     beamSegments.clear();
                     break;
                 }
 
                 // Forge Compatibility
-                float[] customColor = ((IBlock)b).getBeaconColorMultiplier(state, world, blockPos, pos);
-                if(customColor != null) color = customColor;
+                float[] customColor = ((IBlock) b).getBeaconColorMultiplier(state, world, blockPos, pos);
+                if (customColor != null) color = customColor;
             }
 
-            if(color == null) {
+            if (color == null) {
                 beam.incrementHeight();
                 continue;
             }
 
-            if(oldColor != null) {
+            if (oldColor != null) {
                 color = new float[]{
                         (oldColor[0] + color[0]) / 2,
                         (oldColor[1] + color[1]) / 2,
@@ -148,7 +148,7 @@ public abstract class FastBeacon extends TileEntityBeacon {
                 };
             }
 
-            if(Arrays.equals(color, oldColor)) {
+            if (Arrays.equals(color, oldColor)) {
                 beam.incrementHeight();
             } else {
                 beam = new BeamSegment(color);
@@ -166,13 +166,13 @@ public abstract class FastBeacon extends TileEntityBeacon {
     private void updateActivation(int x, int y, int z) {
         isComplete = true;
 
-        for(int blockY = y + 1; blockY < world.getActualHeight(); blockY++) {
+        for (int blockY = y + 1; blockY < world.getActualHeight(); blockY++) {
 
             BlockPos pos = new BlockPos(x, blockY, z);
             IBlockState state = world.getBlockState(pos);
             Block b = state.getBlock();
 
-            if(b != Blocks.BEDROCK && state.getLightOpacity() >= 15) {
+            if (b != Blocks.BEDROCK && state.getLightOpacity() >= 15) {
                 isComplete = false;
                 break;
             }
@@ -187,19 +187,20 @@ public abstract class FastBeacon extends TileEntityBeacon {
         boolean isClient = world.isRemote;
         int levelsOld = levels;
 
-        lvlLoop: for(int lvl = 1; lvl <= 4; lvl++) {
+        lvlLoop:
+        for (int lvl = 1; lvl <= 4; lvl++) {
             levels = lvl;
             int blockY = y - lvl;
-            if(blockY < 0) break;
+            if (blockY < 0) break;
 
-            for(int blockX = x - lvl; blockX <= x + lvl; blockX++) {
-                for(int blockZ = z - lvl; blockZ <= z + lvl; blockZ++) {
+            for (int blockX = x - lvl; blockX <= x + lvl; blockX++) {
+                for (int blockZ = z - lvl; blockZ <= z + lvl; blockZ++) {
 
                     BlockPos blockPos = new BlockPos(blockX, blockY, blockZ);
                     Block block = world.getBlockState(blockPos).getBlock();
 
                     // Forge Compatibility
-                    if(!((IBlock)block).isBeaconBase(world, blockPos, pos)) {
+                    if (!((IBlock) block).isBeaconBase(world, blockPos, pos)) {
                         levels--;
                         break lvlLoop;
                     }
@@ -208,16 +209,16 @@ public abstract class FastBeacon extends TileEntityBeacon {
             }
 
             // If it's a client, let's ignore all other layers
-            if(isClient) break;
+            if (isClient) break;
         }
-        if(levels == 0) {
+        if (levels == 0) {
             isComplete = false;
         }
 
-        if(!isClient && levelsOld < levels) {
+        if (!isClient && levelsOld < levels) {
             // Give the full beacon advancement
             AxisAlignedBB box = new AxisAlignedBB(x, y, z, x, y - 4, z).expand(10.0, 5.0, 10.0);
-            for(EntityPlayerMP player : world.getEntitiesWithinAABB(EntityPlayerMP.class, box)) {
+            for (EntityPlayerMP player : world.getEntitiesWithinAABB(EntityPlayerMP.class, box)) {
                 CriteriaTriggers.CONSTRUCT_BEACON.trigger(player, this);
             }
         }

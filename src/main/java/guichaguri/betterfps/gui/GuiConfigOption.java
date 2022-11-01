@@ -8,7 +8,6 @@ import org.lwjgl.input.Keyboard;
  * @author Guilherme Chaguri
  */
 public class GuiConfigOption<T> extends GuiCycleButton<T> {
-
     private String description;
     private boolean wide = false;
     private boolean restart = false;

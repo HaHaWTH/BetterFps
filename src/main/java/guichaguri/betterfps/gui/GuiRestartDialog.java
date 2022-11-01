@@ -42,7 +42,7 @@ public class GuiRestartDialog extends GuiScreen {
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
+    protected void actionPerformed(GuiButton button) {
         switch (button.id) {
             case 1:
                 mc.shutdown();

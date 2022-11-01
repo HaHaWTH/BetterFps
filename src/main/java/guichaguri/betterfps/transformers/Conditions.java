@@ -4,16 +4,16 @@ import guichaguri.betterfps.BetterFpsConfig;
 import guichaguri.betterfps.BetterFpsHelper;
 import guichaguri.betterfps.transformers.annotations.Condition;
 import guichaguri.betterfps.tweaker.Mappings;
+import org.objectweb.asm.tree.AnnotationNode;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.objectweb.asm.tree.AnnotationNode;
 
 /**
  * @author Guilherme Chaguri
  */
 public class Conditions {
-
-    protected static final List<Mappings> patched = new ArrayList<Mappings>();
+    protected static final List<Mappings> patched = new ArrayList<>();
 
     public static final String FAST_HOPPER = "fastHopper";
     public static final String FAST_BEACON = "fastBeacon";
@@ -27,16 +27,17 @@ public class Conditions {
     public static boolean shouldPatch(String condition) {
         BetterFpsConfig config = BetterFpsHelper.getConfig();
 
-        if(condition.equals(FAST_HOPPER)) {
-            return config.fastHopper;
-        } else if(condition.equals(FAST_BEACON)) {
-            return config.fastBeacon;
-        } else if(condition.equals(FAST_SEARCH)) {
-            return config.fastSearch;
-        } else if(condition.equals(FAST_BEAM_RENDER)) {
-            return !config.beaconBeam;
-        } else if(condition.equals(FOG_DISABLED)) {
-            return !config.fog;
+        switch (condition) {
+            case FAST_HOPPER:
+                return config.fastHopper;
+            case FAST_BEACON:
+                return config.fastBeacon;
+            case FAST_SEARCH:
+                return config.fastSearch;
+            case FAST_BEAM_RENDER:
+                return !config.beaconBeam;
+            case FOG_DISABLED:
+                return !config.fog;
         }
 
         return true;
@@ -47,7 +48,7 @@ public class Conditions {
      */
     public static boolean shouldPatch(List<AnnotationNode> annotations) {
         AnnotationNode condition = ASMUtils.getAnnotation(annotations, Condition.class);
-        if(condition != null) {
+        if (condition != null) {
             String id = ASMUtils.getAnnotationValue(condition, "value", String.class);
             return id == null || shouldPatch(id);
         }

@@ -6,8 +6,7 @@ import org.apache.commons.lang3.ArrayUtils;
 /**
  * @author Guilherme Chaguri
  */
-public class GuiCycleButton<T extends Object> extends GuiButton {
-
+public class GuiCycleButton<T> extends GuiButton {
     protected final String title;
 
     protected int index = 0;

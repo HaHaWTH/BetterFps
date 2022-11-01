@@ -2,18 +2,20 @@ package guichaguri.betterfps.gui;
 
 import com.google.common.collect.ImmutableSet;
 import guichaguri.betterfps.tweaker.BetterFpsTweaker;
-import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Set;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.ResourceLocation;
 
+import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Set;
+
 /**
  * A resource pack that serves the purpose to provide lang files
+ *
  * @author Guilherme Chaguri
  */
 public class BetterFpsResourcePack implements IResourcePack {
@@ -31,7 +33,7 @@ public class BetterFpsResourcePack implements IResourcePack {
     public InputStream getInputStream(ResourceLocation location) throws IOException {
         InputStream stream = BetterFpsTweaker.getResourceStream(getPath(location));
 
-        if(stream == null) throw new FileNotFoundException();
+        if (stream == null) throw new FileNotFoundException();
 
         return stream;
     }
@@ -47,7 +49,7 @@ public class BetterFpsResourcePack implements IResourcePack {
     }
 
     @Override
-    public <T extends IMetadataSection> T getPackMetadata(MetadataSerializer serializer, String sectionName) throws IOException {
+    public <T extends IMetadataSection> T getPackMetadata(MetadataSerializer serializer, String sectionName) {
         return null; // No metadata for now
     }
 

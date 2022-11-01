@@ -18,7 +18,7 @@ import org.objectweb.asm.tree.ClassNode;
 public class PatcherTransformer implements IClassTransformer {
 
     // Target Class Name, Patch Class Name
-    private static final Map<Mappings, String> patches = new HashMap<Mappings, String>();
+    private static final Map<Mappings, String> patches = new HashMap<>();
 
     static {
         patches.put(Mappings.C_Block, "guichaguri/betterfps/patches/block/BlockPatch");

@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
 public class MathTransformer implements IClassTransformer {
 
     // Config Name, Class Name
-    private static final LinkedHashMap<AlgorithmType, String> algorithmClasses = new LinkedHashMap<AlgorithmType, String>();
+    private static final LinkedHashMap<AlgorithmType, String> algorithmClasses = new LinkedHashMap<>();
 
     static {
         algorithmClasses.put(AlgorithmType.RIVENS, "guichaguri/betterfps/math/RivensMath");
@@ -29,9 +29,6 @@ public class MathTransformer implements IClassTransformer {
         algorithmClasses.put(AlgorithmType.JAVA, "guichaguri/betterfps/math/JavaMath");
         algorithmClasses.put(AlgorithmType.RANDOM, "guichaguri/betterfps/math/RandomMath");
     }
-
-    private final String METHOD_SIN = "sin";
-    private final String METHOD_COS = "cos";
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] bytes) {
@@ -85,6 +82,8 @@ public class MathTransformer implements IClassTransformer {
         }
 
         for (MethodNode m : mathClass.methods) {
+            String METHOD_COS = "cos";
+            String METHOD_SIN = "sin";
             if (m.name.equals(METHOD_SIN)) {
                 if (sin != null) m.name = sin.name;
                 ASMUtils.copyMethod(mathClass, classNode, m, sin, true);
